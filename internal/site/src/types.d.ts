@@ -54,8 +54,12 @@ export interface SystemInfo {
 	u: number
 	/** memory percent */
 	mp: number
+	/** memory [used GiB, total GiB] */
+	ms?: [number, number]
 	/** disk percent */
 	dp: number
+	/** root disk [used GiB, total GiB] */
+	ds?: [number, number]
 	/** battery percent and state */
 	bat?: [number, BatteryState]
 	/** bandwidth (mb) */

@@ -179,7 +179,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			accessorFn: ({ info }) => info.mp || undefined,
 			id: "memory",
 			name: () => t`Memory`,
-			cell: TableCellWithMeter,
+			cell: (info: CellContext<SystemRecord, unknown>) => TableCellWithMeter(info, info.row.original.info.ms),
 			Icon: MemoryStickIcon,
 			header: sortableHeader,
 		},
@@ -188,7 +188,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			id: "disk",
 			name: () => t`Disk`,
 			cell: (info: CellContext<SystemRecord, unknown>) =>
-				info.row.original.info.efs ? DiskCellWithMultiple(info) : TableCellWithMeter(info),
+				info.row.original.info.efs ? DiskCellWithMultiple(info) : TableCellWithMeter(info, info.row.original.info.ds),
 			Icon: HardDriveIcon,
 			header: sortableHeader,
 		},
@@ -458,7 +458,7 @@ function sortableHeader(context: HeaderContext<SystemRecord, unknown>) {
 	)
 }
 
-function TableCellWithMeter(info: CellContext<SystemRecord, unknown>) {
+function TableCellWithMeter(info: CellContext<SystemRecord, unknown>, usage?: [number, number]) {
 	const { colorWarn = 65, colorCrit = 90 } = useStore($userSettings, { keys: ["colorWarn", "colorCrit"] })
 	const val = Number(info.getValue()) || 0
 	const threshold = getMeterStateByThresholds(val, colorWarn, colorCrit)
@@ -472,8 +472,9 @@ function TableCellWithMeter(info: CellContext<SystemRecord, unknown>) {
 	return (
 		<div className="flex gap-2 items-center tabular-nums tracking-tight w-full">
 			<span className="min-w-8 shrink-0">{decimalString(val, val >= 10 ? 1 : 2)}%</span>
-			<span className="flex-1 min-w-8 grid bg-muted h-[1em] rounded-sm overflow-hidden">
-				<span className={meterClass} style={{ width: `${val}%` }}></span>
+			<span className="relative flex-1 min-w-8 flex items-center justify-center bg-muted h-[1em] rounded-sm overflow-hidden">
+				<span className={cn("absolute inset-y-0 start-0", meterClass)} style={{ width: `${val}%` }}></span>
+				{usage?.[1] ? <UsageTotal usage={usage} /> : null}
 			</span>
 		</div>
 	)
@@ -521,19 +522,22 @@ function DiskCellWithMultiple(info: CellContext<SystemRecord, unknown>) {
 				>
 					<div className="flex gap-2 items-center tabular-nums tracking-tight">
 						<span className="min-w-8 shrink-0">{decimalString(rootDiskPct, rootDiskPct >= 10 ? 1 : 2)}%</span>
-						<span className="flex-1 min-w-8 flex items-center gap-0.5 px-1 justify-end bg-muted h-[1em] rounded-sm overflow-hidden relative">
+						<span className="relative flex-1 min-w-8 flex items-center justify-center px-1 bg-muted h-[1em] rounded-sm overflow-hidden">
 							{/* Root disk */}
 							<span
 								className={cn("absolute inset-0", getMeterClass(rootDiskPct))}
 								style={{ width: `${rootDiskPct}%` }}
 							></span>
+							{sysInfo.ds?.[1] ? <UsageTotal usage={sysInfo.ds} /> : null}
 							{/* Extra disk indicators */}
-							{extraDiskIndicators.map((color) => (
-								<span
-									key={color}
-									className={cn("size-1.5 rounded-full shrink-0 outline-[0.5px] outline-muted", color)}
-								/>
-							))}
+							<span className="absolute end-1 z-10 flex items-center gap-0.5">
+								{extraDiskIndicators.map((color) => (
+									<span
+										key={color}
+										className={cn("size-1.5 rounded-full shrink-0 outline-[0.5px] outline-muted", color)}
+									/>
+								))}
+							</span>
 						</span>
 					</div>
 				</Link>
@@ -569,6 +573,20 @@ function DiskCellWithMultiple(info: CellContext<SystemRecord, unknown>) {
 				</div>
 			</TooltipContent>
 		</Tooltip>
+	)
+}
+
+function UsageTotal({ usage: [used, total] }: { usage: [number, number] }) {
+	const useTerabytes = total >= 1000
+	const divisor = useTerabytes ? 1024 : 1
+	const unit = useTerabytes ? "TB" : "GB"
+	const usedValue = used / divisor
+	const totalValue = total / divisor
+
+	return (
+		<span className="relative z-10 mx-auto whitespace-nowrap px-1 text-[10px] font-medium leading-none drop-shadow-[0_1px_1px_hsl(var(--background))]">
+			{decimalString(usedValue, usedValue >= 10 ? 1 : 2)} / {decimalString(totalValue, totalValue >= 10 ? 1 : 2)} {unit}
+		</span>
 	)
 }
 
