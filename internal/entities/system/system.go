@@ -155,6 +155,8 @@ type Info struct {
 	ExtraFsPct     map[string]float64 `json:"efs,omitempty" cbor:"21,keyasint,omitempty"`
 	Services       []uint16           `json:"sv,omitempty" cbor:"22,keyasint,omitempty"` // [totalServices, numFailedServices]
 	Battery        [2]uint8           `json:"bat,omitzero" cbor:"23,keyasint,omitzero"`  // [percent, charge state]
+	Memory         [2]float64         `json:"ms,omitzero" cbor:"24,keyasint,omitzero"`   // [used GiB, total GiB]
+	Disk           [2]float64         `json:"ds,omitzero" cbor:"25,keyasint,omitzero"`   // [used GiB, total GiB]
 }
 
 // Data that does not change during process lifetime and is not needed in All Systems table

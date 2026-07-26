@@ -239,6 +239,8 @@ func (sys *System) createRecords(data *system.CombinedData) (*core.Record, error
 		}
 
 		// update system record (do this last because it triggers alerts and we need above records to be inserted first)
+		data.Info.Memory = [2]float64{data.Stats.MemUsed, data.Stats.Mem}
+		data.Info.Disk = [2]float64{data.Stats.DiskUsed, data.Stats.DiskTotal}
 		systemRecord.Set("status", up)
 		systemRecord.Set("info", data.Info)
 		if err := txApp.SaveNoValidate(systemRecord); err != nil {
