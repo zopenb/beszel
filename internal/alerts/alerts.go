@@ -254,6 +254,14 @@ func (am *AlertManager) SendShoutrrrAlert(notificationUrl, title, message, link,
 	if err != nil {
 		return fmt.Errorf("error parsing URL: %v", err)
 	}
+	if isDingTalkURL(parsedURL) {
+		if err := sendDingTalkAlert(dingTalkHTTPClient, notificationUrl, title, message, link); err != nil {
+			am.hub.Logger().Error("Error sending DingTalk alert", "err", err)
+			return err
+		}
+		am.hub.Logger().Info("Sent DingTalk alert", "title", title)
+		return nil
+	}
 	scheme := parsedURL.Scheme
 	queryParams := parsedURL.Query()
 
