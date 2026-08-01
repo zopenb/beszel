@@ -95,6 +95,9 @@ export const SystemDialog = ({ setOpen, system }: { setOpen: (open: boolean) => 
 		e.preventDefault()
 		const formData = new FormData(e.target as HTMLFormElement)
 		const data = Object.fromEntries(formData) as Record<string, any>
+		if (data.subscription_expires) {
+			data.subscription_expires = new Date(`${data.subscription_expires}T23:59:59.999`).toISOString()
+		}
 		data.users = pb.authStore.record!.id
 		try {
 			setOpen(false)
@@ -204,6 +207,16 @@ export const SystemDialog = ({ setOpen, system }: { setOpen: (open: boolean) => 
 							required={!isUnixSocket}
 							className={cn(isUnixSocket && "hidden")}
 						/>
+						<Label htmlFor="subscription_expires" className="xs:text-end whitespace-pre">
+							<Trans>Subscription expires</Trans>
+						</Label>
+						<Input
+							id="subscription_expires"
+							name="subscription_expires"
+							type="date"
+							defaultValue={formatSubscriptionDateInput(system?.subscription_expires)}
+							className="tabular-nums"
+						/>
 						<Label htmlFor="pkey" className="xs:text-end whitespace-pre">
 							<Trans comment="Use 'Key' if your language requires many more characters">Public Key</Trans>
 						</Label>
@@ -278,6 +291,20 @@ export const SystemDialog = ({ setOpen, system }: { setOpen: (open: boolean) => 
 			</Tabs>
 		</DialogContent>
 	)
+}
+
+function formatSubscriptionDateInput(value?: string) {
+	if (!value) {
+		return ""
+	}
+	const date = new Date(value)
+	if (Number.isNaN(date.getTime())) {
+		return ""
+	}
+	const year = date.getFullYear()
+	const month = String(date.getMonth() + 1).padStart(2, "0")
+	const day = String(date.getDate()).padStart(2, "0")
+	return `${year}-${month}-${day}`
 }
 
 interface CopyButtonProps {
