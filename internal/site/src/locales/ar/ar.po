@@ -46,6 +46,10 @@ msgstr "{count, plural, one {{countString} ساعة} other {{countString} ساع
 msgid "{count, plural, one {{countString} minute} few {{countString} minutes} many {{countString} minutes} other {{countString} minutes}}"
 msgstr "{count, plural, one {{countString} دقيقة} few {{countString} دقائق} many {{countString} دقيقة} other {{countString} دقيقة}}"
 
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "{remainingDays, plural, one {# day} other {# days}}"
+msgstr ""
+
 #: src/components/routes/system/info-bar.tsx
 msgid "{threads, plural, one {# thread} other {# threads}}"
 msgstr "{threads, plural, one {# خيط} other {# خيط}}"
@@ -717,7 +721,6 @@ msgstr "أدخل كلمة المرور لمرة واحدة الخاصة بك."
 msgid "Ephemeral"
 msgstr "مؤقت"
 
-#: src/components/login/auth-form.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/config-yaml.tsx
 #: src/components/routes/settings/heartbeat.tsx
@@ -753,6 +756,10 @@ msgstr "سيتم حذف الأنظمة الحالية غير المعرفة في
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Exited active"
 msgstr "خرج نشطًا"
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Expired"
+msgstr ""
 
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Expires after one hour or on hub restart."
@@ -1133,6 +1140,10 @@ msgstr "لا توجد سمات S.M.A.R.T. متاحة لهذا الجهاز."
 #: src/components/systems-table/systems-table.tsx
 msgid "No systems found."
 msgstr "لم يتم العثور على أنظمة."
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Not set"
+msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/layout.tsx
@@ -1542,6 +1553,14 @@ msgstr "الحالة"
 msgid "Sub State"
 msgstr "الحالة الفرعية"
 
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Subscription"
+msgstr ""
+
+#: src/components/add-system.tsx
+msgid "Subscription expires"
+msgstr ""
+
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap space used by the system"
 msgstr "مساحة التبديل المستخدمة من قبل النظام"
@@ -1549,6 +1568,11 @@ msgstr "مساحة التبديل المستخدمة من قبل النظام"
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap Usage"
 msgstr "استخدام التبديل"
+
+#: src/components/mode-toggle.tsx
+#: src/components/mode-toggle.tsx
+msgid "Switch theme"
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
@@ -1659,8 +1683,8 @@ msgstr "إلى البريد الإشباكي"
 
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
-msgid "Toggle theme"
-msgstr "تبديل السمة"
+#~ msgid "Toggle theme"
+#~ msgstr "تبديل السمة"
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx

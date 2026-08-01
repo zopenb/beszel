@@ -46,6 +46,10 @@ msgstr "{count, plural, one {{countString} שעה} two {{countString} שעות} 
 msgid "{count, plural, one {{countString} minute} few {{countString} minutes} many {{countString} minutes} other {{countString} minutes}}"
 msgstr "{count, plural, one {{countString} דקה} two {{countString} דקות} other {{countString} דקות}}"
 
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "{remainingDays, plural, one {# day} other {# days}}"
+msgstr ""
+
 #: src/components/routes/system/info-bar.tsx
 msgid "{threads, plural, one {# thread} other {# threads}}"
 msgstr "{threads, plural, one {# תהליכון} other {# תהליכונים}}"
@@ -717,7 +721,6 @@ msgstr "הכנס את הסיסמה החד-פעמית שלך."
 msgid "Ephemeral"
 msgstr "זמני"
 
-#: src/components/login/auth-form.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/config-yaml.tsx
 #: src/components/routes/settings/heartbeat.tsx
@@ -753,6 +756,10 @@ msgstr "מערכות קיימות שלא מוגדרות ב-<0>config.yml</0> י�
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Exited active"
 msgstr "יצא פעיל"
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Expired"
+msgstr ""
 
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Expires after one hour or on hub restart."
@@ -1133,6 +1140,10 @@ msgstr "אין מאפייני S.M.A.R.T. זמינים עבור התקן זה."
 #: src/components/systems-table/systems-table.tsx
 msgid "No systems found."
 msgstr "לא נמצאו מערכות."
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Not set"
+msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/layout.tsx
@@ -1542,6 +1553,14 @@ msgstr "סטטוס"
 msgid "Sub State"
 msgstr "מצב משני"
 
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Subscription"
+msgstr ""
+
+#: src/components/add-system.tsx
+msgid "Subscription expires"
+msgstr ""
+
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap space used by the system"
 msgstr "שטח swap בשימוש על ידי המערכת"
@@ -1549,6 +1568,11 @@ msgstr "שטח swap בשימוש על ידי המערכת"
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap Usage"
 msgstr "שימוש ב-Swap"
+
+#: src/components/mode-toggle.tsx
+#: src/components/mode-toggle.tsx
+msgid "Switch theme"
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
@@ -1659,8 +1683,8 @@ msgstr "לאימייל(ים)"
 
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
-msgid "Toggle theme"
-msgstr "החלף ערכת נושא"
+#~ msgid "Toggle theme"
+#~ msgstr "החלף ערכת נושא"
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
