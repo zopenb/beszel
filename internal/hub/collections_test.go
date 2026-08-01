@@ -135,6 +135,9 @@ func TestCollectionRulesDefault(t *testing.T) {
 	// systems collection
 	systemsCollection, err := hub.FindCollectionByNameOrId("systems")
 	require.NoError(t, err, "Failed to find systems collection")
+	subscriptionExpiryField := systemsCollection.Fields.GetByName("subscription_expires")
+	require.NotNil(t, subscriptionExpiryField, "systems collection should have subscription expiry field")
+	assert.Equal(t, core.FieldTypeDate, subscriptionExpiryField.Type())
 	assert.Equal(t, isUserInUsers, *systemsCollection.ListRule)
 	assert.Equal(t, isUserInUsers, *systemsCollection.ViewRule)
 	assert.Equal(t, isUserInUsersNotReadonly, *systemsCollection.CreateRule)
