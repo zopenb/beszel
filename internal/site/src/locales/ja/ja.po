@@ -46,6 +46,10 @@ msgstr "{count, plural, one {{countString} 時間} other {{countString} 時間}}
 msgid "{count, plural, one {{countString} minute} few {{countString} minutes} many {{countString} minutes} other {{countString} minutes}}"
 msgstr "{count, plural, one {{countString} 分} few {{countString} 分} many {{countString} 分} other {{countString} 分}}"
 
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "{remainingDays, plural, one {# day} other {# days}}"
+msgstr ""
+
 #: src/components/routes/system/info-bar.tsx
 msgid "{threads, plural, one {# thread} other {# threads}}"
 msgstr "{threads, plural, one {# スレッド} other {# スレッド}}"
@@ -717,7 +721,6 @@ msgstr "ワンタイムパスワードを入力してください。"
 msgid "Ephemeral"
 msgstr "一時的"
 
-#: src/components/login/auth-form.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/config-yaml.tsx
 #: src/components/routes/settings/heartbeat.tsx
@@ -753,6 +756,10 @@ msgstr "<0>config.yml</0>に定義されていない既存のシステムは削�
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Exited active"
 msgstr "アクティブ状態で終了"
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Expired"
+msgstr ""
 
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Expires after one hour or on hub restart."
@@ -1133,6 +1140,10 @@ msgstr "このデバイスのS.M.A.R.T.属性は利用できません。"
 #: src/components/systems-table/systems-table.tsx
 msgid "No systems found."
 msgstr "システムが見つかりませんでした。"
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Not set"
+msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/layout.tsx
@@ -1542,6 +1553,14 @@ msgstr "ステータス"
 msgid "Sub State"
 msgstr "サブ状態"
 
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Subscription"
+msgstr ""
+
+#: src/components/add-system.tsx
+msgid "Subscription expires"
+msgstr ""
+
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap space used by the system"
 msgstr "システムが使用するスワップ領域"
@@ -1549,6 +1568,11 @@ msgstr "システムが使用するスワップ領域"
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap Usage"
 msgstr "スワップ使用量"
+
+#: src/components/mode-toggle.tsx
+#: src/components/mode-toggle.tsx
+msgid "Switch theme"
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
@@ -1659,8 +1683,8 @@ msgstr "宛先メールアドレス"
 
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
-msgid "Toggle theme"
-msgstr "テーマを切り替え"
+#~ msgid "Toggle theme"
+#~ msgstr "テーマを切り替え"
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
