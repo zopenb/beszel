@@ -46,6 +46,10 @@ msgstr "{count, plural, one {{countString} 小时} other {{countString} 小时}}
 msgid "{count, plural, one {{countString} minute} few {{countString} minutes} many {{countString} minutes} other {{countString} minutes}}"
 msgstr "{count, plural, one {{countString} 分钟} few {{countString} 分钟} many {{countString} 分钟} other {{countString} 分钟}}"
 
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "{remainingDays, plural, one {# day} other {# days}}"
+msgstr "{remainingDays, plural, one {# 天} other {# 天}}"
+
 #: src/components/routes/system/info-bar.tsx
 msgid "{threads, plural, one {# thread} other {# threads}}"
 msgstr "{threads, plural, one {# 线程} other {# 线程}}"
@@ -717,7 +721,6 @@ msgstr "输入您的一次性密码。"
 msgid "Ephemeral"
 msgstr "临时"
 
-#: src/components/login/auth-form.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/config-yaml.tsx
 #: src/components/routes/settings/heartbeat.tsx
@@ -753,6 +756,10 @@ msgstr "未在<0>config.yml</0>中定义的客户端将被删除。请定期备�
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Exited active"
 msgstr "退出活动状态"
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Expired"
+msgstr "已到期"
 
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Expires after one hour or on hub restart."
@@ -1133,6 +1140,10 @@ msgstr "此设备没有可用的 S.M.A.R.T. 属性。"
 #: src/components/systems-table/systems-table.tsx
 msgid "No systems found."
 msgstr "未找到系统。"
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Not set"
+msgstr "未设置"
 
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/layout.tsx
@@ -1542,6 +1553,14 @@ msgstr "状态"
 msgid "Sub State"
 msgstr "子状态"
 
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Subscription"
+msgstr "订阅"
+
+#: src/components/add-system.tsx
+msgid "Subscription expires"
+msgstr "订阅到期日"
+
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap space used by the system"
 msgstr "系统使用的 SWAP 空间"
@@ -1549,6 +1568,11 @@ msgstr "系统使用的 SWAP 空间"
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap Usage"
 msgstr "SWAP 使用率"
+
+#: src/components/mode-toggle.tsx
+#: src/components/mode-toggle.tsx
+msgid "Switch theme"
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
@@ -1659,8 +1683,8 @@ msgstr "发送到电子邮件"
 
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
-msgid "Toggle theme"
-msgstr "切换主题"
+#~ msgid "Toggle theme"
+#~ msgstr "切换主题"
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx

@@ -41,6 +41,10 @@ msgstr "{count, plural, one {{countString} hour} other {{countString} hours}}"
 msgid "{count, plural, one {{countString} minute} few {{countString} minutes} many {{countString} minutes} other {{countString} minutes}}"
 msgstr "{count, plural, one {{countString} minute} few {{countString} minutes} many {{countString} minutes} other {{countString} minutes}}"
 
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "{remainingDays, plural, one {# day} other {# days}}"
+msgstr "{remainingDays, plural, one {# day} other {# days}}"
+
 #: src/components/routes/system/info-bar.tsx
 msgid "{threads, plural, one {# thread} other {# threads}}"
 msgstr "{threads, plural, one {# thread} other {# threads}}"
@@ -712,7 +716,6 @@ msgstr "Enter your one-time password."
 msgid "Ephemeral"
 msgstr "Ephemeral"
 
-#: src/components/login/auth-form.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/config-yaml.tsx
 #: src/components/routes/settings/heartbeat.tsx
@@ -748,6 +751,10 @@ msgstr "Existing systems not defined in <0>config.yml</0> will be deleted. Pleas
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Exited active"
 msgstr "Exited active"
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Expired"
+msgstr "Expired"
 
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Expires after one hour or on hub restart."
@@ -1128,6 +1135,10 @@ msgstr "No S.M.A.R.T. attributes available for this device."
 #: src/components/systems-table/systems-table.tsx
 msgid "No systems found."
 msgstr "No systems found."
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Not set"
+msgstr "Not set"
 
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/layout.tsx
@@ -1537,6 +1548,14 @@ msgstr "Status"
 msgid "Sub State"
 msgstr "Sub State"
 
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Subscription"
+msgstr "Subscription"
+
+#: src/components/add-system.tsx
+msgid "Subscription expires"
+msgstr "Subscription expires"
+
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap space used by the system"
 msgstr "Swap space used by the system"
@@ -1544,6 +1563,11 @@ msgstr "Swap space used by the system"
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap Usage"
 msgstr "Swap Usage"
+
+#: src/components/mode-toggle.tsx
+#: src/components/mode-toggle.tsx
+msgid "Switch theme"
+msgstr "Switch theme"
 
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
@@ -1654,8 +1678,8 @@ msgstr "To email(s)"
 
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
-msgid "Toggle theme"
-msgstr "Toggle theme"
+#~ msgid "Toggle theme"
+#~ msgstr "Toggle theme"
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
