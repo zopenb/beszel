@@ -1,5 +1,5 @@
 /** biome-ignore-all lint/correctness/useHookAtTopLevel: Hooks live inside memoized column definitions */
-import { t } from "@lingui/core/macro"
+import { plural, t } from "@lingui/core/macro"
 import { Trans, useLingui } from "@lingui/react/macro"
 import { useStore } from "@nanostores/react"
 import { getPagePath } from "@nanostores/router"
@@ -7,6 +7,7 @@ import type { CellContext, ColumnDef, HeaderContext } from "@tanstack/react-tabl
 import type { ClassValue } from "clsx"
 import {
 	ArrowUpDownIcon,
+	CalendarClockIcon,
 	ChevronRightSquareIcon,
 	ClockArrowUp,
 	CopyIcon,
@@ -363,6 +364,33 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 						<span className="text-muted-foreground text-sm -ms-0.5">
 							({t`Failed`.toLowerCase()}: {numFailed})
 						</span>
+					</span>
+				)
+			},
+		},
+		{
+			accessorFn: ({ subscription_expires }) => {
+				const expiresAt = Date.parse(subscription_expires ?? "")
+				return Number.isNaN(expiresAt) ? undefined : expiresAt
+			},
+			id: "subscription",
+			name: () => t`Subscription`,
+			size: 70,
+			Icon: CalendarClockIcon,
+			header: sortableHeader,
+			sortUndefined: "last",
+			cell(info) {
+				const expiresAt = info.getValue() as number | undefined
+				if (expiresAt === undefined) {
+					return <span className="text-muted-foreground whitespace-nowrap">{t`Not set`}</span>
+				}
+				const remainingDays = Math.ceil((expiresAt - Date.now()) / 86_400_000)
+				if (remainingDays <= 0) {
+					return <span className="text-red-500 whitespace-nowrap">{t`Expired`}</span>
+				}
+				return (
+					<span className={cn("tabular-nums whitespace-nowrap", remainingDays <= 30 && "text-yellow-500")}>
+						{plural(remainingDays, { one: "# day", other: "# days" })}
 					</span>
 				)
 			},
