@@ -46,6 +46,10 @@ msgstr "{count, plural, one {{countString} jam} other {{countString} jam}}"
 msgid "{count, plural, one {{countString} minute} few {{countString} minutes} many {{countString} minutes} other {{countString} minutes}}"
 msgstr "{count, plural, one {{countString} menit} few {{countString} menit} many {{countString} menit} other {{countString} menit}}"
 
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "{remainingDays, plural, one {# day} other {# days}}"
+msgstr ""
+
 #: src/components/routes/system/info-bar.tsx
 msgid "{threads, plural, one {# thread} other {# threads}}"
 msgstr "{threads, plural, one {# thread} other {# thread}}"
@@ -717,7 +721,6 @@ msgstr "Masukkan otp anda."
 msgid "Ephemeral"
 msgstr "Sementara"
 
-#: src/components/login/auth-form.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/config-yaml.tsx
 #: src/components/routes/settings/heartbeat.tsx
@@ -753,6 +756,10 @@ msgstr "Sistem yang ada yang tidak didefinisikan dalam <0>config.yml</0> akan di
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Exited active"
 msgstr "Keluar aktif"
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Expired"
+msgstr ""
 
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Expires after one hour or on hub restart."
@@ -1133,6 +1140,10 @@ msgstr "Tidak ada atribut S.M.A.R.T. yang tersedia untuk perangkat ini."
 #: src/components/systems-table/systems-table.tsx
 msgid "No systems found."
 msgstr "Sistem tidak ditemukan."
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Not set"
+msgstr ""
 
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/layout.tsx
@@ -1542,6 +1553,14 @@ msgstr ""
 msgid "Sub State"
 msgstr "Sub Status"
 
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Subscription"
+msgstr ""
+
+#: src/components/add-system.tsx
+msgid "Subscription expires"
+msgstr ""
+
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap space used by the system"
 msgstr "Ruang swap yang digunakan oleh sistem"
@@ -1549,6 +1568,11 @@ msgstr "Ruang swap yang digunakan oleh sistem"
 #: src/components/routes/system/charts/memory-charts.tsx
 msgid "Swap Usage"
 msgstr "Penggunaan Swap"
+
+#: src/components/mode-toggle.tsx
+#: src/components/mode-toggle.tsx
+msgid "Switch theme"
+msgstr ""
 
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
@@ -1659,8 +1683,8 @@ msgstr "Ke email"
 
 #: src/components/mode-toggle.tsx
 #: src/components/mode-toggle.tsx
-msgid "Toggle theme"
-msgstr "Ganti tema"
+#~ msgid "Toggle theme"
+#~ msgstr "Ganti tema"
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
