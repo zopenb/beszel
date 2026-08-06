@@ -275,8 +275,8 @@ func TestSkipNetworkInterface(t *testing.T) {
 		{"veth prefix", psutilNet.IOCountersStat{Name: "veth0abc", BytesSent: 100, BytesRecv: 100}, nil, true},
 		{"bond prefix", psutilNet.IOCountersStat{Name: "bond0", BytesSent: 100, BytesRecv: 100}, nil, true},
 		{"cali prefix", psutilNet.IOCountersStat{Name: "cali1234", BytesSent: 100, BytesRecv: 100}, nil, true},
-		{"zero BytesRecv", psutilNet.IOCountersStat{Name: "eth0", BytesSent: 100, BytesRecv: 0}, nil, true},
-		{"zero BytesSent", psutilNet.IOCountersStat{Name: "eth0", BytesSent: 0, BytesRecv: 100}, nil, true},
+		{"zero BytesRecv", psutilNet.IOCountersStat{Name: "eth0", BytesSent: 100, BytesRecv: 0}, nil, false},
+		{"zero BytesSent", psutilNet.IOCountersStat{Name: "eth0", BytesSent: 0, BytesRecv: 100}, nil, false},
 		{"both zero", psutilNet.IOCountersStat{Name: "eth0", BytesSent: 0, BytesRecv: 0}, nil, true},
 		{"normal eth0", psutilNet.IOCountersStat{Name: "eth0", BytesSent: 100, BytesRecv: 200}, nil, false},
 		{"normal wlan0", psutilNet.IOCountersStat{Name: "wlan0", BytesSent: 1, BytesRecv: 1}, nil, false},
@@ -292,6 +292,32 @@ func TestSkipNetworkInterface(t *testing.T) {
 			assert.Equal(t, tt.expectSkip, skipNetworkInterface(tt.nic, tt.nicCfg))
 		})
 	}
+}
+
+func TestReconcileNetworkInterfaces(t *testing.T) {
+	a := &Agent{netInterfaces: map[string]struct{}{"eth0": {}}}
+
+	a.reconcileNetworkInterfaces([]psutilNet.IOCountersStat{
+		{Name: "eth1", BytesSent: 100},
+		{Name: "docker0", BytesSent: 100, BytesRecv: 100},
+	})
+
+	assert.Equal(t, map[string]struct{}{"eth1": {}}, a.netInterfaces)
+}
+
+func TestReconcileNetworkInterfacesHonorsExplicitNics(t *testing.T) {
+	a := &Agent{
+		netInterfaces: map[string]struct{}{},
+		nicConfig:     newNicConfig("docker0,eth0"),
+	}
+
+	a.reconcileNetworkInterfaces([]psutilNet.IOCountersStat{
+		{Name: "docker0"},
+		{Name: "eth0"},
+		{Name: "eth1", BytesSent: 100, BytesRecv: 100},
+	})
+
+	assert.Equal(t, map[string]struct{}{"docker0": {}, "eth0": {}}, a.netInterfaces)
 }
 
 func TestEnsureNetworkInterfacesMap(t *testing.T) {
@@ -327,21 +353,6 @@ func TestLoadAndTickNetBaseline(t *testing.T) {
 	assert.False(t, ni2.Time.IsZero())
 }
 
-func TestComputeBytesPerSecond(t *testing.T) {
-	a := &Agent{}
-
-	// No elapsed -> zero rate
-	bytesUp, bytesDown := a.computeBytesPerSecond(0, 2000, 3000, system.NetIoStats{BytesSent: 1000, BytesRecv: 1000})
-	assert.Equal(t, uint64(0), bytesUp)
-	assert.Equal(t, uint64(0), bytesDown)
-
-	// With elapsed -> per-second calculation
-	bytesUp, bytesDown = a.computeBytesPerSecond(500, 6000, 11000, system.NetIoStats{BytesSent: 1000, BytesRecv: 1000})
-	// (6000-1000)*1000/500 = 10000; (11000-1000)*1000/500 = 20000
-	assert.Equal(t, uint64(10000), bytesUp)
-	assert.Equal(t, uint64(20000), bytesDown)
-}
-
 func TestSumAndTrackPerNicDeltas(t *testing.T) {
 	a := &Agent{
 		netInterfaces:             map[string]struct{}{"eth0": {}, "wlan0": {}},
@@ -354,21 +365,23 @@ func TestSumAndTrackPerNicDeltas(t *testing.T) {
 	stats1 := &system.Stats{}
 	a.ensureNetworkInterfacesMap(stats1)
 	tx1, rx1 := a.sumAndTrackPerNicDeltas(cache, 0, net1, stats1)
-	assert.Equal(t, uint64(1000), tx1)
-	assert.Equal(t, uint64(2000), rx1)
+	assert.Zero(t, tx1)
+	assert.Zero(t, rx1)
 
 	// Second cycle with elapsed, larger counters -> deltas computed inside
 	net2 := []psutilNet.IOCountersStat{{Name: "eth0", BytesSent: 4000, BytesRecv: 9000}}
 	stats := &system.Stats{}
 	a.ensureNetworkInterfacesMap(stats)
 	tx2, rx2 := a.sumAndTrackPerNicDeltas(cache, 1000, net2, stats)
-	assert.Equal(t, uint64(4000), tx2)
-	assert.Equal(t, uint64(9000), rx2)
+	assert.Equal(t, uint64(3000), tx2)
+	assert.Equal(t, uint64(7000), rx2)
 	// Up/Down deltas per second should be (4000-1000)/1s = 3000 and (9000-2000)/1s = 7000
 	ni, ok := stats.NetworkInterfaces["eth0"]
 	assert.True(t, ok)
 	assert.Equal(t, uint64(3000), ni[0])
 	assert.Equal(t, uint64(7000), ni[1])
+	assert.Equal(t, uint64(4000), ni[2])
+	assert.Equal(t, uint64(9000), ni[3])
 }
 
 func TestSumAndTrackPerNicDeltasHandlesCounterReset(t *testing.T) {
@@ -406,6 +419,58 @@ func TestSumAndTrackPerNicDeltasHandlesCounterReset(t *testing.T) {
 	require.True(t, ok)
 	assert.Equal(t, uint64(1_200), niReset[0], "upload delta should match new counter value after reset")
 	assert.Equal(t, uint64(1_500), niReset[1], "download delta should match new counter value after reset")
+	assert.Equal(t, uint64(1_200), niReset[2], "tuple index 2 should remain the raw sent counter")
+	assert.Equal(t, uint64(1_500), niReset[3], "tuple index 3 should remain the raw received counter")
+}
+
+func TestAggregateBandwidthHandlesNicResetAndRemoval(t *testing.T) {
+	a := &Agent{
+		netInterfaces:             map[string]struct{}{"eth0": {}, "eth1": {}},
+		netInterfaceDeltaTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+	}
+	cache := uint16(88)
+	initial := []psutilNet.IOCountersStat{
+		{Name: "eth0", BytesSent: 10_000, BytesRecv: 20_000},
+		{Name: "eth1", BytesSent: 30_000, BytesRecv: 40_000},
+	}
+	a.sumAndTrackPerNicDeltas(cache, 0, initial, &system.Stats{NetworkInterfaces: make(map[string][4]uint64)})
+
+	// eth0 resets while eth1 increments; aggregate rates must not underflow.
+	reset := []psutilNet.IOCountersStat{
+		{Name: "eth0", BytesSent: 500, BytesRecv: 700},
+		{Name: "eth1", BytesSent: 31_000, BytesRecv: 42_000},
+	}
+	up, down := a.sumAndTrackPerNicDeltas(cache, 1_000, reset, &system.Stats{NetworkInterfaces: make(map[string][4]uint64)})
+	assert.Equal(t, uint64(1_500), up)
+	assert.Equal(t, uint64(2_700), down)
+
+	// A disappeared NIC contributes nothing and does not corrupt the remaining NIC delta.
+	a.netInterfaces = map[string]struct{}{"eth1": {}}
+	remaining := []psutilNet.IOCountersStat{{Name: "eth1", BytesSent: 32_000, BytesRecv: 43_500}}
+	up, down = a.sumAndTrackPerNicDeltas(cache, 1_000, remaining, &system.Stats{NetworkInterfaces: make(map[string][4]uint64)})
+	assert.Equal(t, uint64(1_000), up)
+	assert.Equal(t, uint64(1_500), down)
+}
+
+func TestAggregateBandwidthSumsBeforeRounding(t *testing.T) {
+	a := &Agent{
+		netInterfaces:             map[string]struct{}{"eth0": {}, "eth1": {}},
+		netInterfaceDeltaTrackers: make(map[uint16]*deltatracker.DeltaTracker[string, uint64]),
+	}
+	cache := uint16(89)
+	initial := []psutilNet.IOCountersStat{
+		{Name: "eth0", BytesSent: 100, BytesRecv: 100},
+		{Name: "eth1", BytesSent: 100, BytesRecv: 100},
+	}
+	a.sumAndTrackPerNicDeltas(cache, 0, initial, &system.Stats{NetworkInterfaces: make(map[string][4]uint64)})
+
+	next := []psutilNet.IOCountersStat{
+		{Name: "eth0", BytesSent: 101, BytesRecv: 101},
+		{Name: "eth1", BytesSent: 101, BytesRecv: 101},
+	}
+	up, down := a.sumAndTrackPerNicDeltas(cache, 1_500, next, &system.Stats{NetworkInterfaces: make(map[string][4]uint64)})
+	assert.Equal(t, uint64(1), up)
+	assert.Equal(t, uint64(1), down)
 }
 
 func TestApplyNetworkTotals(t *testing.T) {
@@ -413,8 +478,6 @@ func TestApplyNetworkTotals(t *testing.T) {
 		name                  string
 		bytesSentPerSecond    uint64
 		bytesRecvPerSecond    uint64
-		totalBytesSent        uint64
-		totalBytesRecv        uint64
 		expectReset           bool
 		expectedBandwidthSent uint64
 		expectedBandwidthRecv uint64
@@ -423,8 +486,6 @@ func TestApplyNetworkTotals(t *testing.T) {
 			name:                  "Valid network stats - normal values",
 			bytesSentPerSecond:    1000000, // 1 MB/s
 			bytesRecvPerSecond:    2000000, // 2 MB/s
-			totalBytesSent:        10000000,
-			totalBytesRecv:        20000000,
 			expectReset:           false,
 			expectedBandwidthSent: 1000000,
 			expectedBandwidthRecv: 2000000,
@@ -433,32 +494,24 @@ func TestApplyNetworkTotals(t *testing.T) {
 			name:               "Invalid network stats - sent exceeds threshold",
 			bytesSentPerSecond: 11000000000, // ~10.5 GB/s > 10 GB/s threshold
 			bytesRecvPerSecond: 1000000,     // 1 MB/s
-			totalBytesSent:     10000000,
-			totalBytesRecv:     20000000,
 			expectReset:        true,
 		},
 		{
 			name:               "Invalid network stats - recv exceeds threshold",
 			bytesSentPerSecond: 1000000,     // 1 MB/s
 			bytesRecvPerSecond: 11000000000, // ~10.5 GB/s > 10 GB/s threshold
-			totalBytesSent:     10000000,
-			totalBytesRecv:     20000000,
 			expectReset:        true,
 		},
 		{
 			name:               "Invalid network stats - both exceed threshold",
 			bytesSentPerSecond: 12000000000, // ~11.4 GB/s
 			bytesRecvPerSecond: 13000000000, // ~12.4 GB/s
-			totalBytesSent:     10000000,
-			totalBytesRecv:     20000000,
 			expectReset:        true,
 		},
 		{
 			name:                  "Zero values",
 			bytesSentPerSecond:    0,
 			bytesRecvPerSecond:    0,
-			totalBytesSent:        0,
-			totalBytesRecv:        0,
 			expectReset:           false,
 			expectedBandwidthSent: 0,
 			expectedBandwidthRecv: 0,
@@ -486,8 +539,6 @@ func TestApplyNetworkTotals(t *testing.T) {
 				netIO,
 				systemStats,
 				nis,
-				tt.totalBytesSent,
-				tt.totalBytesRecv,
 				tt.bytesSentPerSecond,
 				tt.bytesRecvPerSecond,
 			)
@@ -503,10 +554,7 @@ func TestApplyNetworkTotals(t *testing.T) {
 				assert.Equal(t, tt.expectedBandwidthSent, systemStats.Bandwidth[0])
 				assert.Equal(t, tt.expectedBandwidthRecv, systemStats.Bandwidth[1])
 
-				// Should have updated NetIoStats
-				updatedNis := a.netIoStats[cacheTimeMs]
-				assert.Equal(t, tt.totalBytesSent, updatedNis.BytesSent)
-				assert.Equal(t, tt.totalBytesRecv, updatedNis.BytesRecv)
+				assert.Contains(t, a.netIoStats, cacheTimeMs)
 			}
 		})
 	}

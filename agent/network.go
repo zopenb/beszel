@@ -77,16 +77,13 @@ func isValidNic(nicName string, cfg *NicConfig) bool {
 }
 
 func (a *Agent) updateNetworkStats(cacheTimeMs uint16, systemStats *system.Stats) {
-	// network stats
-	a.ensureNetInterfacesInitialized()
-
 	a.ensureNetworkInterfacesMap(systemStats)
 
 	if netIO, err := psutilNet.IOCounters(true); err == nil {
+		a.reconcileNetworkInterfaces(netIO)
 		nis, msElapsed := a.loadAndTickNetBaseline(cacheTimeMs)
-		totalBytesSent, totalBytesRecv := a.sumAndTrackPerNicDeltas(cacheTimeMs, msElapsed, netIO, systemStats)
-		bytesSentPerSecond, bytesRecvPerSecond := a.computeBytesPerSecond(msElapsed, totalBytesSent, totalBytesRecv, nis)
-		a.applyNetworkTotals(cacheTimeMs, netIO, systemStats, nis, totalBytesSent, totalBytesRecv, bytesSentPerSecond, bytesRecvPerSecond)
+		bytesSentPerSecond, bytesRecvPerSecond := a.sumAndTrackPerNicDeltas(cacheTimeMs, msElapsed, netIO, systemStats)
+		a.applyNetworkTotals(cacheTimeMs, netIO, systemStats, nis, bytesSentPerSecond, bytesRecvPerSecond)
 	}
 }
 
@@ -96,21 +93,14 @@ func (a *Agent) initializeNetIoStats() {
 
 	// parse NICS env var for whitelist / blacklist
 	nicsEnvVal, nicsEnvExists := utils.GetEnv("NICS")
-	var nicCfg *NicConfig
+	a.nicConfig = nil
 	if nicsEnvExists {
-		nicCfg = newNicConfig(nicsEnvVal)
+		a.nicConfig = newNicConfig(nicsEnvVal)
 	}
 
-	// get current network I/O stats and record valid interfaces
+	// Get current network I/O stats and record valid interfaces.
 	if netIO, err := psutilNet.IOCounters(true); err == nil {
-		for _, v := range netIO {
-			if skipNetworkInterface(v, nicCfg) {
-				continue
-			}
-			slog.Info("Detected network interface", "name", v.Name, "sent", v.BytesSent, "recv", v.BytesRecv)
-			// store as a valid network interface
-			a.netInterfaces[v.Name] = struct{}{}
-		}
+		a.reconcileNetworkInterfaces(netIO)
 	}
 
 	// Reset per-cache-time trackers and baselines so they will reinitialize on next use
@@ -118,15 +108,19 @@ func (a *Agent) initializeNetIoStats() {
 	a.netIoStats = make(map[uint16]system.NetIoStats)
 }
 
-// ensureNetInterfacesInitialized re-initializes NICs if none are currently tracked
-func (a *Agent) ensureNetInterfacesInitialized() {
-	if len(a.netInterfaces) == 0 {
-		// if no network interfaces, initialize again
-		// this is a fix if agent started before network is online (#466)
-		// maybe refactor this in the future to not cache interface names at all so we
-		// don't miss an interface that's been added after agent started in any circumstance
-		a.initializeNetIoStats()
+// reconcileNetworkInterfaces refreshes the selected NIC set from the current counters.
+func (a *Agent) reconcileNetworkInterfaces(netIO []psutilNet.IOCountersStat) {
+	selected := make(map[string]struct{})
+	for _, v := range netIO {
+		if skipNetworkInterface(v, a.nicConfig) {
+			continue
+		}
+		selected[v.Name] = struct{}{}
+		if _, exists := a.netInterfaces[v.Name]; !exists {
+			slog.Info("Detected network interface", "name", v.Name, "sent", v.BytesSent, "recv", v.BytesRecv)
+		}
 	}
+	a.netInterfaces = selected
 }
 
 // ensureNetworkInterfacesMap ensures systemStats.NetworkInterfaces map exists
@@ -149,8 +143,8 @@ func (a *Agent) loadAndTickNetBaseline(cacheTimeMs uint16) (netIoStat system.Net
 	return netIoStat, msElapsed
 }
 
-// sumAndTrackPerNicDeltas accumulates totals and records per-NIC up/down deltas into systemStats
-func (a *Agent) sumAndTrackPerNicDeltas(cacheTimeMs uint16, msElapsed uint64, netIO []psutilNet.IOCountersStat, systemStats *system.Stats) (totalBytesSent, totalBytesRecv uint64) {
+// sumAndTrackPerNicDeltas records per-NIC rates and returns their aggregate rates.
+func (a *Agent) sumAndTrackPerNicDeltas(cacheTimeMs uint16, msElapsed uint64, netIO []psutilNet.IOCountersStat, systemStats *system.Stats) (bytesSentPerSecond, bytesRecvPerSecond uint64) {
 	tracker := a.netInterfaceDeltaTrackers[cacheTimeMs]
 	if tracker == nil {
 		tracker = deltatracker.NewDeltaTracker[string, uint64]()
@@ -158,13 +152,11 @@ func (a *Agent) sumAndTrackPerNicDeltas(cacheTimeMs uint16, msElapsed uint64, ne
 	}
 	tracker.Cycle()
 
+	var totalSentDelta, totalRecvDelta uint64
 	for _, v := range netIO {
 		if _, exists := a.netInterfaces[v.Name]; !exists {
 			continue
 		}
-		totalBytesSent += v.BytesSent
-		totalBytesRecv += v.BytesRecv
-
 		var upDelta, downDelta uint64
 		upKey, downKey := fmt.Sprintf("%sup", v.Name), fmt.Sprintf("%sdown", v.Name)
 		tracker.Set(upKey, v.BytesSent)
@@ -178,6 +170,7 @@ func (a *Agent) sumAndTrackPerNicDeltas(cacheTimeMs uint16, msElapsed uint64, ne
 					deltaBytes = v.BytesSent
 				}
 				upDelta = deltaBytes * 1000 / msElapsed
+				totalSentDelta += deltaBytes
 			}
 			if prevVal, ok := tracker.Previous(downKey); ok {
 				var deltaBytes uint64
@@ -187,20 +180,16 @@ func (a *Agent) sumAndTrackPerNicDeltas(cacheTimeMs uint16, msElapsed uint64, ne
 					deltaBytes = v.BytesRecv
 				}
 				downDelta = deltaBytes * 1000 / msElapsed
+				totalRecvDelta += deltaBytes
 			}
 		}
 		systemStats.NetworkInterfaces[v.Name] = [4]uint64{upDelta, downDelta, v.BytesSent, v.BytesRecv}
 	}
-
-	return totalBytesSent, totalBytesRecv
-}
-
-// computeBytesPerSecond calculates per-second totals from elapsed time and totals
-func (a *Agent) computeBytesPerSecond(msElapsed, totalBytesSent, totalBytesRecv uint64, nis system.NetIoStats) (bytesSentPerSecond, bytesRecvPerSecond uint64) {
 	if msElapsed > 0 {
-		bytesSentPerSecond = (totalBytesSent - nis.BytesSent) * 1000 / msElapsed
-		bytesRecvPerSecond = (totalBytesRecv - nis.BytesRecv) * 1000 / msElapsed
+		bytesSentPerSecond = totalSentDelta * 1000 / msElapsed
+		bytesRecvPerSecond = totalRecvDelta * 1000 / msElapsed
 	}
+
 	return bytesSentPerSecond, bytesRecvPerSecond
 }
 
@@ -210,7 +199,6 @@ func (a *Agent) applyNetworkTotals(
 	netIO []psutilNet.IOCountersStat,
 	systemStats *system.Stats,
 	nis system.NetIoStats,
-	totalBytesSent, totalBytesRecv uint64,
 	bytesSentPerSecond, bytesRecvPerSecond uint64,
 ) {
 	if bytesSentPerSecond > 10_000_000_000 || bytesRecvPerSecond > 10_000_000_000 {
@@ -229,8 +217,6 @@ func (a *Agent) applyNetworkTotals(
 	}
 
 	systemStats.Bandwidth[0], systemStats.Bandwidth[1] = bytesSentPerSecond, bytesRecvPerSecond
-	nis.BytesSent = totalBytesSent
-	nis.BytesRecv = totalBytesRecv
 	a.netIoStats[cacheTimeMs] = nis
 }
 
@@ -254,8 +240,7 @@ func skipNetworkInterface(v psutilNet.IOCountersStat, nicCfg *NicConfig) bool {
 		strings.HasPrefix(v.Name, "veth"),
 		strings.HasPrefix(v.Name, "bond"),
 		strings.HasPrefix(v.Name, "cali"),
-		v.BytesRecv == 0,
-		v.BytesSent == 0:
+		v.BytesRecv == 0 && v.BytesSent == 0:
 		return true
 	default:
 		return false
