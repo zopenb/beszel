@@ -155,6 +155,10 @@ msgstr "Po nastavitvi okoljskih spremenljivk ponovno zaženite vozlišče Beszel
 msgid "Agent"
 msgstr ""
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Agent statistics"
+msgstr ""
+
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/layout.tsx
@@ -286,6 +290,10 @@ msgstr "Beszel podpira OpenID Connect in številne ponudnike preverjanja pristno
 msgid "Beszel uses <0>Shoutrrr</0> to integrate with popular notification services."
 msgstr "Beszel uporablja <0>Shoutrrr</0> za integracijo s priljubljenimi storitvami obveščanja."
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Billing day"
+msgstr ""
+
 #: src/components/add-system.tsx
 msgid "Binary"
 msgstr "Binarno"
@@ -322,6 +330,7 @@ msgstr "Lahko ustavi"
 
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/quiet-hours.tsx
+#: src/components/routes/system/traffic-quota.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Cancel"
 msgstr "Prekliči"
@@ -342,6 +351,14 @@ msgstr "Pozor - možna izguba podatkov"
 msgid "Celsius (°C)"
 msgstr "Celzija (°C)"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Change billing day"
+msgstr ""
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Change billing day?"
+msgstr ""
+
 #: src/components/routes/settings/general.tsx
 msgid "Change display units for metrics."
 msgstr "Spremenite enote prikaza za metrike."
@@ -349,6 +366,10 @@ msgstr "Spremenite enote prikaza za metrike."
 #: src/components/routes/settings/general.tsx
 msgid "Change general application options."
 msgstr "Spremeni splošne možnosti aplikacije."
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Changing the billing day may start a new cycle and reset the current traffic usage."
+msgstr ""
 
 #: src/components/routes/system/charts/sensor-charts.tsx
 msgid "Charge"
@@ -413,6 +434,10 @@ msgstr "Navodila za ukazno vrstico"
 #: src/components/routes/settings/notifications.tsx
 msgid "Configure how you receive alert notifications."
 msgstr "Nastavi način prejemanja opozorilnih obvestil."
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Configure the billing cycle and traffic counted for this system."
+msgstr ""
 
 #: src/components/login/auth-form.tsx
 #: src/components/login/auth-form.tsx
@@ -555,15 +580,27 @@ msgstr "Kumulativno nalaganje"
 msgid "Current state"
 msgstr "Trenutno stanje"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Cycle"
+msgstr ""
+
 #. Power Cycles
 #: src/components/routes/system/smart-table.tsx
 msgid "Cycles"
 msgstr "Cikli"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Cycles use Asia/Shanghai time. For shorter months, day 29-31 uses the month's last day."
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Daily"
 msgstr "Dnevno"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Decimal units are used: 1 GB = 1,000,000,000 bytes. Set the quota to 0 to disable it."
+msgstr ""
 
 #: src/components/routes/system/info-bar.tsx
 msgctxt "Default system layout option"
@@ -705,6 +742,10 @@ msgstr "URL končne točke"
 msgid "Endpoint URL to ping (required)"
 msgstr "URL končne točke za ping (zahtevano)"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Enter a quota that resolves to a whole number of bytes."
+msgstr ""
+
 #: src/components/login/login.tsx
 msgid "Enter email address to reset password"
 msgstr "Vnesite e-poštni naslov za ponastavitev gesla"
@@ -810,6 +851,10 @@ msgstr "Pošiljanje testnega obvestila ni uspelo"
 #: src/components/alerts/alerts-sheet.tsx
 msgid "Failed to update alert"
 msgstr "Opozorila ni bilo mogoče posodobiti"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Failed to update traffic quota"
+msgstr ""
 
 #. placeholder {0}: statusTotals[ServiceStatus.Failed]
 #: src/components/systemd-table/systemd-table.tsx
@@ -1083,6 +1128,27 @@ msgstr "Poraba pomnilnika docker kontejnerjev"
 msgid "Model"
 msgstr ""
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Monthly quota"
+msgstr ""
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Monthly traffic"
+msgstr ""
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Monthly traffic quota"
+msgstr ""
+
+#: src/lib/alerts.ts
+msgid "Monthly traffic quota usage exceeds {value}%"
+msgstr ""
+
+#: src/components/routes/system/traffic-quota.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Monthly traffic quota used"
+msgstr ""
+
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
@@ -1118,6 +1184,10 @@ msgstr "Enota omrežja"
 msgid "No"
 msgstr "Ne"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "No monthly traffic quota is set."
+msgstr ""
+
 #: src/components/command-palette.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "No results found."
@@ -1141,6 +1211,7 @@ msgstr "Za to napravo ni na voljo atributov S.M.A.R.T."
 msgid "No systems found."
 msgstr "Ne najdem sistema."
 
+#: src/components/systems-table/systems-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Not set"
 msgstr ""
@@ -1336,6 +1407,14 @@ msgstr "Globina čakalne vrste"
 msgid "Quiet Hours"
 msgstr "Tihi čas"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Quota"
+msgstr ""
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Quota unit"
+msgstr ""
+
 #. Disk read
 #: src/components/routes/system/charts/disk-charts.tsx
 #: src/components/routes/system/disk-io-sheet.tsx
@@ -1345,6 +1424,7 @@ msgid "Read"
 msgstr "Preberano"
 
 #: src/components/routes/system/charts/network-charts.tsx
+#: src/components/routes/system/traffic-quota.tsx
 msgid "Received"
 msgstr "Prejeto"
 
@@ -1357,6 +1437,10 @@ msgstr "Osveži"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Relationships"
 msgstr "Razmerja"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Remaining"
+msgstr ""
 
 #: src/components/login/login.tsx
 msgid "Request a one-time password"
@@ -1417,6 +1501,10 @@ msgstr "S.M.A.R.T. podrobnosti"
 msgid "S.M.A.R.T. Self-Test"
 msgstr "S.M.A.R.T. samotestiranje"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Save"
+msgstr ""
+
 #: src/components/add-system.tsx
 msgid "Save {foo}"
 msgstr "Shrani {foo}"
@@ -1433,6 +1521,10 @@ msgstr "Shrani nastavitve"
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Saved in the database and does not expire until you disable it."
 msgstr "Shranjeno v bazi podatkov in ne poteče, dokler ga ne onemogočite."
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Saving..."
+msgstr ""
 
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Schedule"
@@ -1479,8 +1571,17 @@ msgid "Send test heartbeat"
 msgstr "Pošlji testni srčni utrip"
 
 #: src/components/routes/system/charts/network-charts.tsx
+#: src/components/routes/system/traffic-quota.tsx
 msgid "Sent"
 msgstr "Poslano"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Sent and received"
+msgstr ""
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Sent only"
+msgstr ""
 
 #: src/components/routes/system/smart-table.tsx
 msgid "Serial Number"
@@ -1494,6 +1595,10 @@ msgstr "Podrobnosti storitve"
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Services"
 msgstr "Storitve"
+
+#: src/components/alerts/alerts-sheet.tsx
+msgid "Set a monthly traffic quota to enable this alert."
+msgstr ""
 
 #: src/components/routes/settings/general.tsx
 msgid "Set percentage thresholds for meter colors."
@@ -1528,6 +1633,10 @@ msgstr "SMTP nastavitve"
 #: src/components/systems-table/systems-table.tsx
 msgid "Sort By"
 msgstr "Razvrsti po"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Source"
+msgstr ""
 
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
@@ -1649,6 +1758,12 @@ msgstr "Testni srčni utrip"
 msgid "Test notification sent"
 msgstr "Testno obvestilo je poslano"
 
+#. placeholder {0}: usage.reset_count
+#. placeholder {1}: usage.interface_change_count
+#: src/components/routes/system/traffic-quota.tsx
+msgid "The agent observed {0} counter resets and {1} interface changes during this cycle."
+msgstr ""
+
 #: src/components/routes/settings/heartbeat.tsx
 msgid "The overall status is <0>ok</0> when all systems are up, <1>warn</1> when alerts are triggered, and <2>error</2> when any system is down."
 msgstr "Splošno stanje je <0>v redu</0>, ko vsi sistemi delujejo, <1>opozorilo</1>, ko se sprožijo opozorila, in <2>napaka</2>, ko kateri koli sistem ne deluje."
@@ -1728,6 +1843,31 @@ msgstr ""
 msgid "Total: {0}"
 msgstr "Skupaj: {0}"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Tracking started"
+msgstr ""
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Traffic"
+msgstr ""
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Traffic counted"
+msgstr ""
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Traffic data is incomplete"
+msgstr ""
+
+#: src/lib/alerts.ts
+msgid "Traffic Quota"
+msgstr ""
+
+#: src/components/routes/system/traffic-quota.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Traffic settings"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Triggered by"
 msgstr "Sproženo z"
@@ -1771,6 +1911,10 @@ msgstr "Sproži se, ko poraba GPU preseže prag"
 #: src/lib/alerts.ts
 msgid "Triggers when memory usage exceeds a threshold"
 msgstr "Sproži se, ko uporaba pomnilnika preseže prag"
+
+#: src/lib/alerts.ts
+msgid "Triggers when monthly traffic quota usage exceeds a threshold"
+msgstr ""
 
 #: src/lib/alerts.ts
 msgid "Triggers when status switches between up and down"
@@ -1851,12 +1995,18 @@ msgstr "Čas delovanja"
 msgid "Usage"
 msgstr "Uporaba"
 
+#. placeholder {0}: alertData.unit
+#: src/components/alerts/alerts-sheet.tsx
+msgid "Usage exceeds <0>{value}{0}</0>"
+msgstr ""
+
 #: src/components/routes/system/charts/disk-charts.tsx
 msgid "Usage of root partition"
 msgstr "Uporaba korenske particije"
 
 #: src/components/routes/system/charts/memory-charts.tsx
 #: src/components/routes/system/charts/memory-charts.tsx
+#: src/components/routes/system/traffic-quota.tsx
 msgid "Used"
 msgstr "Uporabljeno"
 
@@ -1883,6 +2033,10 @@ msgstr "Pogled"
 #: src/components/routes/system/network-sheet.tsx
 msgid "View more"
 msgstr "Prikaži več"
+
+#: src/components/active-alerts.tsx
+msgid "View system"
+msgstr ""
 
 #: src/components/routes/settings/alerts-history-data-table.tsx
 msgid "View your 200 most recent alerts."
@@ -1951,6 +2105,10 @@ msgstr "YAML nastavitev"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Yes"
 msgstr "Da"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "You have read-only access. Traffic settings cannot be changed."
+msgstr ""
 
 #: src/components/routes/settings/layout.tsx
 msgid "Your user settings have been updated."
