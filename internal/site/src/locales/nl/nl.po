@@ -129,6 +129,10 @@ msgstr "Voeg {foo} toe"
 msgid "Add URL"
 msgstr "Voeg URL toe"
 
+#: src/components/systems-table/systems-table.tsx
+msgid "Adjust column order"
+msgstr ""
+
 #: src/components/routes/settings/general.tsx
 msgid "Adjust display options for charts."
 msgstr "Weergaveopties voor grafieken aanpassen."
@@ -1456,6 +1460,10 @@ msgstr "Relaties"
 msgid "Remaining"
 msgstr ""
 
+#: src/components/systems-table/systems-table.tsx
+msgid "Reorder the fields shown between System and Actions."
+msgstr ""
+
 #: src/components/login/login.tsx
 msgid "Request a one-time password"
 msgstr "Eenmalig wachtwoord aanvragen"
@@ -1472,7 +1480,6 @@ msgstr "Vereist door"
 msgid "Requires"
 msgstr "Vereist"
 
-#: src/components/systems-table/systems-table.tsx
 #: src/components/systems-table/systems-table.tsx
 msgid "Reset column order"
 msgstr ""
