@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/correctness/useHookAtTopLevel: Hooks live inside memoized column definitions */
 import { plural, t } from "@lingui/core/macro"
+import { i18n } from "@lingui/core"
 import { Trans, useLingui } from "@lingui/react/macro"
 import { useStore } from "@nanostores/react"
 import { getPagePath } from "@nanostores/router"
@@ -13,6 +14,7 @@ import {
 	CopyIcon,
 	CpuIcon,
 	HardDriveIcon,
+	GaugeIcon,
 	MemoryStickIcon,
 	MoreHorizontalIcon,
 	PauseCircleIcon,
@@ -37,8 +39,16 @@ import {
 	parseSemVer,
 	secondsToUptimeString,
 } from "@/lib/utils"
+import {
+	formatDecimalBytes,
+	getTrafficMeterClass,
+	getTrafficPercent,
+	getTrafficUsed,
+	parseByteString,
+} from "@/lib/traffic"
 import { batteryStateTranslations } from "@/lib/i18n"
 import type { SystemRecord } from "@/types"
+import { TrafficQuotaSettings } from "../routes/system/traffic-quota"
 import { SystemDialog } from "../add-system"
 import AlertButton from "../alerts/alert-button"
 import { $router, Link } from "../router"
@@ -369,6 +379,61 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			},
 		},
 		{
+			accessorFn: (system) => {
+				const quota = parseByteString(system.traffic_quota_bytes)
+				return quota > 0n
+					? getTrafficPercent(getTrafficUsed(system.traffic_usage, system.traffic_count_mode), quota)
+					: undefined
+			},
+			id: "traffic",
+			name: () => t`Traffic`,
+			size: 100,
+			Icon: GaugeIcon,
+			header: sortableHeader,
+			sortUndefined: "last",
+			sortingFn: (a, b) => {
+				const quotaA = parseByteString(a.original.traffic_quota_bytes)
+				const quotaB = parseByteString(b.original.traffic_quota_bytes)
+				if (quotaA === 0n || quotaB === 0n) return quotaA === quotaB ? 0 : quotaA === 0n ? -1 : 1
+				const usedA = getTrafficUsed(a.original.traffic_usage, a.original.traffic_count_mode)
+				const usedB = getTrafficUsed(b.original.traffic_usage, b.original.traffic_count_mode)
+				const left = usedA * quotaB
+				const right = usedB * quotaA
+				return left === right ? 0 : left < right ? -1 : 1
+			},
+			cell(info) {
+				const system = info.row.original
+				const quota = parseByteString(system.traffic_quota_bytes)
+				if (quota === 0n) {
+					return <span className="whitespace-nowrap text-muted-foreground">{t`Not set`}</span>
+				}
+				const used = getTrafficUsed(system.traffic_usage, system.traffic_count_mode)
+				const percentage = getTrafficPercent(used, quota)
+				return (
+					<div
+						className="grid min-w-28 gap-1 tabular-nums"
+						title={`${formatDecimalBytes(used, 2, i18n.locale)} / ${formatDecimalBytes(quota, 2, i18n.locale)}`}
+					>
+						<span className="text-xs whitespace-nowrap">{Math.min(percentage, 999.9)}%</span>
+						<span
+							className="h-1.5 overflow-hidden rounded-full bg-muted"
+							role="progressbar"
+							aria-label={t`Monthly traffic quota used`}
+							aria-valuemin={0}
+							aria-valuemax={100}
+							aria-valuenow={Math.min(percentage, 100)}
+							aria-valuetext={`${formatDecimalBytes(used, 2, i18n.locale)} / ${formatDecimalBytes(quota, 2, i18n.locale)} (${percentage}%)`}
+						>
+							<span
+								className={`block h-full ${getTrafficMeterClass(percentage)}`}
+								style={{ width: `${Math.min(percentage, 100)}%` }}
+							/>
+						</span>
+					</div>
+				)
+			},
+		},
+		{
 			accessorFn: ({ subscription_expires }) => {
 				const expiresAt = Date.parse(subscription_expires ?? "")
 				return Number.isNaN(expiresAt) ? undefined : expiresAt
@@ -631,6 +696,7 @@ export function IndicatorDot({ system, className }: { system: SystemRecord; clas
 export const ActionsButton = memo(({ system }: { system: SystemRecord }) => {
 	const [deleteOpen, setDeleteOpen] = useState(false)
 	const [editOpen, setEditOpen] = useState(false)
+	const [trafficOpen, setTrafficOpen] = useState(false)
 	const editOpened = useRef(false)
 	const { t } = useLingui()
 	const { id, status, host, name } = system
@@ -649,15 +715,21 @@ export const ActionsButton = memo(({ system }: { system: SystemRecord }) => {
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
 						{!isReadOnlyUser() && (
-							<DropdownMenuItem
-								onSelect={() => {
-									editOpened.current = true
-									setEditOpen(true)
-								}}
-							>
-								<PenBoxIcon className="me-2.5 size-4" />
-								<Trans>Edit</Trans>
-							</DropdownMenuItem>
+							<>
+								<DropdownMenuItem
+									onSelect={() => {
+										editOpened.current = true
+										setEditOpen(true)
+									}}
+								>
+									<PenBoxIcon className="me-2.5 size-4" />
+									<Trans>Edit</Trans>
+								</DropdownMenuItem>
+								<DropdownMenuItem onSelect={() => setTrafficOpen(true)}>
+									<GaugeIcon className="me-2.5 size-4" />
+									<Trans>Traffic settings</Trans>
+								</DropdownMenuItem>
+							</>
 						)}
 						<DropdownMenuItem
 							className={cn(isReadOnlyUser() && "hidden")}
@@ -698,6 +770,7 @@ export const ActionsButton = memo(({ system }: { system: SystemRecord }) => {
 				<Dialog open={editOpen} onOpenChange={setEditOpen}>
 					{editOpened.current && <SystemDialog system={system} setOpen={setEditOpen} />}
 				</Dialog>
+				<TrafficQuotaSettings system={system} open={trafficOpen} onOpenChange={setTrafficOpen} hideTrigger />
 				{/* deletion dialog */}
 				<AlertDialog open={deleteOpen} onOpenChange={(open) => setDeleteOpen(open)}>
 					<AlertDialogContent>
@@ -727,5 +800,5 @@ export const ActionsButton = memo(({ system }: { system: SystemRecord }) => {
 				</AlertDialog>
 			</>
 		)
-	}, [id, status, host, name, system, t, deleteOpen, editOpen])
+	}, [id, status, host, name, system, t, deleteOpen, editOpen, trafficOpen])
 })
