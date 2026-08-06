@@ -32,6 +32,24 @@ export interface SystemRecord extends RecordModel {
 	info: SystemInfo
 	v: string
 	updated: string
+	traffic_quota_bytes?: string
+	traffic_cycle_day?: number
+	traffic_count_mode?: TrafficCountMode
+	traffic_usage?: TrafficUsage
+}
+
+export type TrafficCountMode = "egress" | "combined"
+
+export interface TrafficUsage {
+	cycle_start: string
+	cycle_end: string
+	sent_bytes: string
+	recv_bytes: string
+	observed_from: string
+	last_sample_at: string
+	complete: boolean
+	reset_count: number
+	interface_change_count: number
 }
 
 export interface SystemInfo {
@@ -338,6 +356,9 @@ export interface AlertInfo {
 	/** Single value description (when there's only one value, like status) */
 	singleDesc?: () => string
 	invert?: boolean
+	noDuration?: boolean
+	requiresTrafficQuota?: boolean
+	activeDesc?: (value: number) => string
 }
 
 export type AlertMap = Record<string, Map<string, AlertRecord>>
