@@ -129,6 +129,10 @@ msgstr "Добавить {foo}"
 msgid "Add URL"
 msgstr "Добавить URL"
 
+#: src/components/systems-table/systems-table.tsx
+msgid "Adjust column order"
+msgstr ""
+
 #: src/components/routes/settings/general.tsx
 msgid "Adjust display options for charts."
 msgstr "Настроить параметры отображения для графиков."
@@ -1456,6 +1460,10 @@ msgstr "Связи"
 msgid "Remaining"
 msgstr ""
 
+#: src/components/systems-table/systems-table.tsx
+msgid "Reorder the fields shown between System and Actions."
+msgstr ""
+
 #: src/components/login/login.tsx
 msgid "Request a one-time password"
 msgstr "Запросить одноразовый пароль"
@@ -1472,7 +1480,6 @@ msgstr "Требуется для"
 msgid "Requires"
 msgstr "Требует"
 
-#: src/components/systems-table/systems-table.tsx
 #: src/components/systems-table/systems-table.tsx
 msgid "Reset column order"
 msgstr ""
