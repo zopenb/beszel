@@ -5,6 +5,7 @@ package systems
 import (
 	"context"
 	"fmt"
+	"time"
 
 	entities "github.com/henrygd/beszel/internal/entities/system"
 	"github.com/pocketbase/pocketbase/core"
@@ -124,4 +125,26 @@ func (s *System) StopUpdater() {
 func (s *System) CreateRecords(data *entities.CombinedData) (*core.Record, error) {
 	s.data = data
 	return s.createRecords(data)
+}
+
+// UpdateTrafficUsageAt applies one accounting sample at a controlled time.
+func UpdateTrafficUsageAt(app core.App, record *core.Record, interfaces map[string][4]uint64, sampledAt time.Time) error {
+	err := app.RunInTransaction(func(txApp core.App) error {
+		fresh, err := txApp.FindRecordById("systems", record.Id)
+		if err != nil {
+			return err
+		}
+		if err := updateTrafficUsage(txApp, fresh, interfaces, sampledAt); err != nil {
+			return err
+		}
+		return txApp.SaveNoValidate(fresh)
+	})
+	if err != nil {
+		return err
+	}
+	fresh, err := app.FindRecordById("systems", record.Id)
+	if err == nil {
+		*record = *fresh
+	}
+	return err
 }
