@@ -3,9 +3,11 @@ package alerts
 import (
 	"database/sql"
 	"errors"
+	"math/big"
 	"net"
 	"net/http"
 	"net/url"
+	"os"
 	"slices"
 	"strings"
 
@@ -15,7 +17,7 @@ import (
 
 // UpsertUserAlerts handles API request to create or update alerts for a user
 // across multiple systems (POST /api/beszel/user-alerts)
-func UpsertUserAlerts(e *core.RequestEvent) error {
+func (am *AlertManager) UpsertUserAlerts(e *core.RequestEvent) error {
 	userID := e.Auth.Id
 
 	reqData := struct {
@@ -34,6 +36,16 @@ func UpsertUserAlerts(e *core.RequestEvent) error {
 	if err != nil {
 		return err
 	}
+	if err := validateAlertRequest(e, alertsCollection, reqData.Name, reqData.Systems, true); err != nil {
+		return err
+	}
+	if reqData.Name == "TrafficQuota" {
+		if reqData.Value != float64(int64(reqData.Value)) || reqData.Value < 1 || reqData.Value > 100 {
+			return e.BadRequestError("TrafficQuota value must be an integer from 1 to 100", nil)
+		}
+		reqData.Min = 1
+	}
+	changedSystems := make([]string, 0, len(reqData.Systems))
 
 	err = e.App.RunInTransaction(func(txApp core.App) error {
 		for _, systemId := range reqData.Systems {
@@ -65,12 +77,24 @@ func UpsertUserAlerts(e *core.RequestEvent) error {
 			if err := txApp.SaveNoValidate(alertRecord); err != nil {
 				return err
 			}
+			changedSystems = append(changedSystems, systemId)
 		}
 		return nil
 	})
 
 	if err != nil {
 		return err
+	}
+	if reqData.Name == "TrafficQuota" {
+		for _, systemID := range changedSystems {
+			systemRecord, err := e.App.FindRecordById("systems", systemID)
+			if err != nil {
+				return err
+			}
+			if err := am.handleTrafficQuotaAlerts(systemRecord); err != nil {
+				return err
+			}
+		}
 	}
 
 	return e.JSON(http.StatusOK, map[string]any{"success": true})
@@ -88,6 +112,13 @@ func DeleteUserAlerts(e *core.RequestEvent) error {
 	err := e.BindBody(&reqData)
 	if err != nil || userID == "" || reqData.AlertName == "" || len(reqData.Systems) == 0 {
 		return e.BadRequestError("Bad data", err)
+	}
+	alertsCollection, err := e.App.FindCachedCollectionByNameOrId("alerts")
+	if err != nil {
+		return err
+	}
+	if err := validateAlertRequest(e, alertsCollection, reqData.AlertName, reqData.Systems, false); err != nil {
+		return err
 	}
 
 	var numDeleted uint16
@@ -120,6 +151,37 @@ func DeleteUserAlerts(e *core.RequestEvent) error {
 	}
 
 	return e.JSON(http.StatusOK, map[string]any{"success": true, "count": numDeleted})
+}
+
+func validateAlertRequest(e *core.RequestEvent, collection *core.Collection, name string, systemIDs []string, requireQuota bool) error {
+	nameField, ok := collection.Fields.GetByName("name").(*core.SelectField)
+	if !ok || !slices.Contains(nameField.Values, name) {
+		return e.BadRequestError("Invalid alert name", nil)
+	}
+	shareAll := envTrue("SHARE_ALL_SYSTEMS")
+	for _, systemID := range systemIDs {
+		systemRecord, err := e.App.FindRecordById("systems", systemID)
+		if err != nil {
+			return e.ForbiddenError("System unavailable", nil)
+		}
+		if !shareAll && !slices.Contains(systemRecord.GetStringSlice("users"), e.Auth.Id) {
+			return e.ForbiddenError("System unavailable", nil)
+		}
+		if name == "TrafficQuota" && requireQuota {
+			quota, ok := new(big.Int).SetString(systemRecord.GetString("traffic_quota_bytes"), 10)
+			if !ok || quota.Sign() <= 0 {
+				return e.BadRequestError("TrafficQuota is unavailable when the system quota is disabled", nil)
+			}
+		}
+	}
+	return nil
+}
+
+func envTrue(name string) bool {
+	if value, ok := os.LookupEnv("BESZEL_HUB_" + name); ok {
+		return value == "true"
+	}
+	return os.Getenv(name) == "true"
 }
 
 // SendTestNotification handles API request to send a test notification to a specified Shoutrrr URL

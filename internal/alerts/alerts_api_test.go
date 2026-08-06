@@ -77,6 +77,9 @@ func TestUserAlertsApi(t *testing.T) {
 		"users": []string{user1.Id, user2.Id},
 		"host":  "127.0.0.2",
 	})
+	system1.Set("traffic_quota_bytes", "1000000")
+	system1.Set("traffic_usage", map[string]any{"sent_bytes": "500000", "recv_bytes": "0"})
+	assert.NoError(t, hub.Save(system1))
 
 	userRecords, _ := hub.CountRecords("users")
 	assert.EqualValues(t, 2, userRecords, "all users should be created")
@@ -142,6 +145,105 @@ func TestUserAlertsApi(t *testing.T) {
 			ExpectedContent: []string{"Bad data"},
 			TestAppFactory:  testAppFactory,
 			Body:            strings.NewReader(`{"alertType": "cpu", "threshold": 80, "enabled": true,}`),
+		},
+		{
+			Name:   "POST rejects unknown alert name",
+			Method: http.MethodPost,
+			URL:    "/api/beszel/user-alerts",
+			Headers: map[string]string{
+				"Authorization": user1Token,
+			},
+			ExpectedStatus:  400,
+			ExpectedContent: []string{"Invalid alert name"},
+			TestAppFactory:  testAppFactory,
+			Body: jsonReader(map[string]any{
+				"name": "Unknown", "systems": []string{system1.Id}, "value": 50,
+			}),
+		},
+		{
+			Name:   "POST rejects system not owned by user",
+			Method: http.MethodPost,
+			URL:    "/api/beszel/user-alerts",
+			Headers: map[string]string{
+				"Authorization": user2Token,
+			},
+			ExpectedStatus:  403,
+			ExpectedContent: []string{"System unavailable"},
+			TestAppFactory:  testAppFactory,
+			Body: jsonReader(map[string]any{
+				"name": "CPU", "systems": []string{system1.Id}, "value": 50,
+			}),
+		},
+		{
+			Name:   "POST rejects fractional TrafficQuota value",
+			Method: http.MethodPost,
+			URL:    "/api/beszel/user-alerts",
+			Headers: map[string]string{
+				"Authorization": user1Token,
+			},
+			ExpectedStatus:  400,
+			ExpectedContent: []string{"integer from 1 to 100"},
+			TestAppFactory:  testAppFactory,
+			Body: jsonReader(map[string]any{
+				"name": "TrafficQuota", "systems": []string{system1.Id}, "value": 50.5,
+			}),
+		},
+		{
+			Name:   "POST rejects TrafficQuota when quota disabled",
+			Method: http.MethodPost,
+			URL:    "/api/beszel/user-alerts",
+			Headers: map[string]string{
+				"Authorization": user2Token,
+			},
+			ExpectedStatus:  400,
+			ExpectedContent: []string{"quota is disabled"},
+			TestAppFactory:  testAppFactory,
+			Body: jsonReader(map[string]any{
+				"name": "TrafficQuota", "systems": []string{system2.Id}, "value": 50,
+			}),
+		},
+		{
+			Name:   "POST TrafficQuota forces minimum to one",
+			Method: http.MethodPost,
+			URL:    "/api/beszel/user-alerts",
+			Headers: map[string]string{
+				"Authorization": user1Token,
+			},
+			ExpectedStatus:  200,
+			ExpectedContent: []string{"\"success\":true"},
+			TestAppFactory:  testAppFactory,
+			Body: jsonReader(map[string]any{
+				"name": "TrafficQuota", "systems": []string{system1.Id}, "value": 50, "min": 30,
+			}),
+			AfterTestFunc: func(t testing.TB, app *pbTests.TestApp, res *http.Response) {
+				alert, err := app.FindFirstRecordByFilter("alerts", "name='TrafficQuota' && system={:system} && user={:user}", dbx.Params{"system": system1.Id, "user": user1.Id})
+				assert.NoError(t, err)
+				assert.Equal(t, 1, alert.GetInt("min"))
+				assert.True(t, alert.GetBool("triggered"), "new quota alert should be evaluated after commit")
+				assert.NoError(t, app.Delete(alert))
+			},
+		},
+		{
+			Name:   "POST SHARE_ALL_SYSTEMS allows non-member system",
+			Method: http.MethodPost,
+			URL:    "/api/beszel/user-alerts",
+			Headers: map[string]string{
+				"Authorization": user2Token,
+			},
+			ExpectedStatus:  200,
+			ExpectedContent: []string{"\"success\":true"},
+			TestAppFactory:  testAppFactory,
+			Body: jsonReader(map[string]any{
+				"name": "CPU", "systems": []string{system1.Id}, "value": 50,
+			}),
+			BeforeTestFunc: func(t testing.TB, app *pbTests.TestApp, e *core.ServeEvent) {
+				t.Setenv("SHARE_ALL_SYSTEMS", "true")
+			},
+			AfterTestFunc: func(t testing.TB, app *pbTests.TestApp, res *http.Response) {
+				alert, err := app.FindFirstRecordByFilter("alerts", "name='CPU' && system={:system} && user={:user}", dbx.Params{"system": system1.Id, "user": user2.Id})
+				assert.NoError(t, err)
+				assert.NoError(t, app.Delete(alert))
+			},
 		},
 		{
 			Name:   "POST valid alert data multiple systems",
@@ -283,6 +385,34 @@ func TestUserAlertsApi(t *testing.T) {
 				alerts, _ := app.CountRecords("alerts")
 				assert.EqualValues(t, 1, alerts, "should have 1 alert")
 			},
+		},
+		{
+			Name:   "DELETE rejects unknown alert name",
+			Method: http.MethodDelete,
+			URL:    "/api/beszel/user-alerts",
+			Headers: map[string]string{
+				"Authorization": user1Token,
+			},
+			ExpectedStatus:  400,
+			ExpectedContent: []string{"Invalid alert name"},
+			TestAppFactory:  testAppFactory,
+			Body: jsonReader(map[string]any{
+				"name": "Unknown", "systems": []string{system1.Id},
+			}),
+		},
+		{
+			Name:   "DELETE rejects system not owned by user",
+			Method: http.MethodDelete,
+			URL:    "/api/beszel/user-alerts",
+			Headers: map[string]string{
+				"Authorization": user2Token,
+			},
+			ExpectedStatus:  403,
+			ExpectedContent: []string{"System unavailable"},
+			TestAppFactory:  testAppFactory,
+			Body: jsonReader(map[string]any{
+				"name": "CPU", "systems": []string{system1.Id},
+			}),
 		},
 		{
 			Name:   "DELETE alert",
