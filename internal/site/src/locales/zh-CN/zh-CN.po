@@ -426,6 +426,10 @@ msgstr "点击系统查看更多信息。"
 msgid "Click to copy"
 msgstr "点击复制"
 
+#: src/components/systems-table/systems-table.tsx
+msgid "Column Order"
+msgstr "列顺序"
+
 #: src/components/login/forgot-pass-form.tsx
 #: src/components/login/forgot-pass-form.tsx
 msgid "Command line instructions"
@@ -1149,6 +1153,16 @@ msgstr "月度流量限额用量超过 {value}%"
 msgid "Monthly traffic quota used"
 msgstr "月度流量限额用量"
 
+#: src/components/systems-table/systems-table.tsx
+#: src/components/systems-table/systems-table.tsx
+msgid "Move {name} down"
+msgstr "下移{name}"
+
+#: src/components/systems-table/systems-table.tsx
+#: src/components/systems-table/systems-table.tsx
+msgid "Move {name} up"
+msgstr "上移{name}"
+
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
@@ -1457,6 +1471,11 @@ msgstr "被需要"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Requires"
 msgstr "需要"
+
+#: src/components/systems-table/systems-table.tsx
+#: src/components/systems-table/systems-table.tsx
+msgid "Reset column order"
+msgstr "重置列顺序"
 
 #: src/components/login/forgot-pass-form.tsx
 msgid "Reset Password"
