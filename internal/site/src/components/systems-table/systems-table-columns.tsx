@@ -409,14 +409,15 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 				}
 				const used = getTrafficUsed(system.traffic_usage, system.traffic_count_mode)
 				const percentage = getTrafficPercent(used, quota)
+				const displayPercentage = Math.min(percentage, 999.9)
 				return (
 					<div
-						className="grid min-w-28 gap-1 tabular-nums"
+						className="flex w-full items-center gap-2 tabular-nums tracking-tight"
 						title={`${formatDecimalBytes(used, 2, i18n.locale)} / ${formatDecimalBytes(quota, 2, i18n.locale)}`}
 					>
-						<span className="text-xs whitespace-nowrap">{Math.min(percentage, 999.9)}%</span>
+						<span className="min-w-8 shrink-0">{displayPercentage}%</span>
 						<span
-							className="h-1.5 overflow-hidden rounded-full bg-muted"
+							className="relative flex h-[1em] min-w-8 flex-1 items-center justify-center overflow-hidden rounded-sm bg-muted"
 							role="progressbar"
 							aria-label={t`Monthly traffic quota used`}
 							aria-valuemin={0}
@@ -425,9 +426,12 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 							aria-valuetext={`${formatDecimalBytes(used, 2, i18n.locale)} / ${formatDecimalBytes(quota, 2, i18n.locale)} (${percentage}%)`}
 						>
 							<span
-								className={`block h-full ${getTrafficMeterClass(percentage)}`}
+								className={`absolute inset-y-0 start-0 ${getTrafficMeterClass(percentage)}`}
 								style={{ width: `${Math.min(percentage, 100)}%` }}
 							/>
+							<span className="relative z-10 mx-auto whitespace-nowrap px-1 text-[10px] font-medium leading-none drop-shadow-[0_1px_1px_hsl(var(--background))]">
+								{formatDecimalBytes(used, 1, i18n.locale)} / {formatDecimalBytes(quota, 1, i18n.locale)}
+							</span>
 						</span>
 					</div>
 				)

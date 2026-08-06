@@ -143,6 +143,8 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 
 				{maybeHasSmartData && <LazySmartTable systemId={system.id} />}
 
+				<TrafficQuota system={system} />
+
 				{hasContainersTable && <LazyContainersTable systemId={system.id} />}
 
 				{hasSystemd && <LazySystemdTable systemId={system.id} />}
@@ -193,6 +195,7 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 						<SwapChart chartData={chartData} grid={grid} dataEmpty={dataEmpty} systemStats={systemStats} />
 						{pageBottomExtraMargin > 0 && <div style={{ marginBottom: pageBottomExtraMargin }}></div>}
 					</div>
+					{!hasContainers && <TrafficQuota system={system} />}
 				</TabsContent>
 
 				<TabsContent value="disk" forceMount className={activeTab === "disk" ? "contents" : "hidden"}>
@@ -228,6 +231,7 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 					<TabsContent value="containers" forceMount className={activeTab === "containers" ? "contents" : "hidden"}>
 						{mountedTabs.has("containers") && (
 							<>
+								<TrafficQuota system={system} />
 								<div className="grid xl:grid-cols-2 gap-4">
 									<ContainerCpuChart
 										chartData={chartData}
@@ -278,8 +282,6 @@ export default memo(function SystemDetail({ id }: { id: string }) {
 				setDisplayMode={setDisplayMode}
 				details={details}
 			/>
-			<TrafficQuota system={system} />
-
 			{displayMode === "tabs" ? tabbedLayout() : defaultLayout()}
 		</div>
 	)
