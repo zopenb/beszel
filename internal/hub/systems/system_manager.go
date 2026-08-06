@@ -15,6 +15,7 @@ import (
 	"github.com/henrygd/beszel"
 
 	"github.com/blang/semver"
+	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/store"
 	"golang.org/x/crypto/ssh"
@@ -53,6 +54,7 @@ type hubLike interface {
 	core.App
 	GetSSHKey(dataDir string) (ssh.Signer, error)
 	HandleSystemAlerts(systemRecord *core.Record, data *system.CombinedData) error
+	HandleTrafficQuotaAlerts(systemRecord *core.Record) error
 	HandleStatusAlerts(status string, systemRecord *core.Record) error
 	CancelPendingStatusAlerts(systemID string)
 }
@@ -121,6 +123,8 @@ func (sm *SystemManager) bindEventHooks() {
 	sm.hub.OnRecordAfterUpdateSuccess("fingerprints").BindFunc(sm.onTokenRotated)
 	sm.hub.OnRealtimeSubscribeRequest().BindFunc(sm.onRealtimeSubscribeRequest)
 	sm.hub.OnRealtimeConnectRequest().BindFunc(sm.onRealtimeConnectRequest)
+	sm.hub.OnRecordCreateRequest("systems").BindFunc(protectTrafficUsage)
+	sm.hub.OnRecordUpdateRequest("systems").BindFunc(protectTrafficUsage)
 }
 
 // onTokenRotated handles fingerprint token rotation events.
@@ -146,6 +150,12 @@ func (sm *SystemManager) onTokenRotated(e *core.RecordEvent) error {
 func (sm *SystemManager) onRecordCreate(e *core.RecordEvent) error {
 	e.Record.Set("info", system.Info{})
 	e.Record.Set("status", pending)
+	if e.Record.GetInt("traffic_cycle_day") == 0 {
+		e.Record.Set("traffic_cycle_day", 1)
+	}
+	if e.Record.GetString("traffic_count_mode") == "" {
+		e.Record.Set("traffic_count_mode", "combined")
+	}
 	return e.Next()
 }
 
@@ -164,6 +174,27 @@ func (sm *SystemManager) onRecordUpdate(e *core.RecordEvent) error {
 	if e.Record.GetString("status") == paused {
 		e.Record.Set("info", system.Info{})
 	}
+	original := e.Record.Original()
+	if trafficAccountingNeedsReset(e.Record, original) {
+		// Persist the projection reset with the system update. The checkpoint is
+		// deleted only after the update commits successfully.
+		e.Record.Set("traffic_usage", nil)
+	}
+	return e.Next()
+}
+
+func protectTrafficUsage(e *core.RecordRequestEvent) error {
+	requestInfo, err := e.RequestInfo()
+	if err != nil {
+		return err
+	}
+	if _, ok := requestInfo.Body["traffic_usage"]; ok {
+		if e.Record.IsNew() {
+			e.Record.Set("traffic_usage", nil)
+		} else {
+			e.Record.Set("traffic_usage", e.Record.Original().GetRaw("traffic_usage"))
+		}
+	}
 	return e.Next()
 }
 
@@ -175,7 +206,15 @@ func (sm *SystemManager) onRecordUpdate(e *core.RecordEvent) error {
 // - up: Triggers system alerts
 // - down: Triggers status change alerts
 func (sm *SystemManager) onRecordAfterUpdateSuccess(e *core.RecordEvent) error {
+	if trafficAccountingNeedsReset(e.Record, e.Record.Original()) {
+		if _, err := e.App.DB().Delete("traffic_checkpoints", dbx.HashExp{"system": e.Record.Id}).Execute(); err != nil {
+			return err
+		}
+	}
 	newStatus := e.Record.GetString("status")
+	if err := sm.hub.HandleTrafficQuotaAlerts(e.Record); err != nil {
+		e.App.Logger().Error("Error handling traffic quota alerts", "err", err)
+	}
 	prevStatus := pending
 	system, ok := sm.systems.GetOk(e.Record.Id)
 	if ok {

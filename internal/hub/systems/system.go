@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"net"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -49,6 +50,7 @@ type System struct {
 	detailsFetched atomic.Bool             // True if static system details have been fetched and saved
 	smartFetching  atomic.Bool             // True if SMART devices are currently being fetched
 	smartInterval  time.Duration           // Interval for periodic SMART data updates
+	recordsMu      sync.Mutex              // Serializes transactional record creation for this system
 }
 
 func (sm *SystemManager) NewSystem(systemId string) *System {
@@ -185,6 +187,9 @@ func (sys *System) handlePaused() {
 
 // createRecords updates the system record and adds system_stats and container_stats records
 func (sys *System) createRecords(data *system.CombinedData) (*core.Record, error) {
+	sys.recordsMu.Lock()
+	defer sys.recordsMu.Unlock()
+
 	systemRecord, err := sys.getRecord(sys.manager.hub)
 	if err != nil {
 		return nil, err
@@ -236,6 +241,10 @@ func (sys *System) createRecords(data *system.CombinedData) (*core.Record, error
 			if err := createSystemDetailsRecord(txApp, data.Details, sys.Id); err != nil {
 				return err
 			}
+		}
+
+		if err := updateTrafficUsage(txApp, systemRecord, data.Stats.NetworkInterfaces, time.Now()); err != nil {
+			return err
 		}
 
 		// update system record (do this last because it triggers alerts and we need above records to be inserted first)
