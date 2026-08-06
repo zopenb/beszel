@@ -102,9 +102,7 @@ function getMeterStateByThresholds(value: number, warn = 65, crit = 90): MeterSt
 export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<SystemRecord>[] {
 	return [
 		{
-			// size: 200,
-			size: 100,
-			minSize: 0,
+			size: 220,
 			accessorKey: "name",
 			id: "system",
 			name: () => t`System`,
@@ -180,6 +178,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 		{
 			accessorFn: ({ info }) => info.cpu || undefined,
 			id: "cpu",
+			size: 160,
 			name: () => t`CPU`,
 			cell: TableCellWithMeter,
 			Icon: CpuIcon,
@@ -189,6 +188,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			// accessorKey: "info.mp",
 			accessorFn: ({ info }) => info.mp || undefined,
 			id: "memory",
+			size: 180,
 			name: () => t`Memory`,
 			cell: (info: CellContext<SystemRecord, unknown>) => TableCellWithMeter(info, info.row.original.info.ms),
 			Icon: MemoryStickIcon,
@@ -197,6 +197,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 		{
 			accessorFn: ({ info }) => info.dp || undefined,
 			id: "disk",
+			size: 180,
 			name: () => t`Disk`,
 			cell: (info: CellContext<SystemRecord, unknown>) =>
 				info.row.original.info.efs ? DiskCellWithMultiple(info) : TableCellWithMeter(info, info.row.original.info.ds),
@@ -206,6 +207,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 		{
 			accessorFn: ({ info }) => info.g || undefined,
 			id: "gpu",
+			size: 160,
 			name: () => "GPU",
 			cell: TableCellWithMeter,
 			Icon: GpuIcon,
@@ -215,7 +217,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			id: "loadAverage",
 			accessorFn: ({ info }) => info.la?.reduce((acc, curr) => acc + curr, 0),
 			name: () => t({ message: "Load Avg", comment: "Short label for load average" }),
-			size: 0,
+			size: 150,
 			Icon: HourglassIcon,
 			header: sortableHeader,
 			cell(info: CellContext<SystemRecord, unknown>) {
@@ -253,7 +255,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			accessorFn: ({ info, status }) => (status !== SystemStatus.Up ? undefined : info.bb),
 			id: "net",
 			name: () => t`Net`,
-			size: 0,
+			size: 120,
 			Icon: EthernetIcon,
 			header: sortableHeader,
 			sortUndefined: "last",
@@ -275,7 +277,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			accessorFn: ({ info }) => info.dt,
 			id: "temp",
 			name: () => t({ message: "Temp", comment: "Temperature label in systems table" }),
-			size: 50,
+			size: 100,
 			hideSort: true,
 			Icon: ThermometerIcon,
 			header: sortableHeader,
@@ -297,7 +299,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			accessorFn: ({ info }) => info.bat?.[0],
 			id: "battery",
 			name: () => t({ message: "Bat", comment: "Battery label in systems table header" }),
-			size: 70,
+			size: 90,
 			Icon: BatteryMediumIcon,
 			header: sortableHeader,
 			hideSort: true,
@@ -343,7 +345,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			accessorFn: ({ info }) => info.sv?.[0],
 			id: "services",
 			name: () => t`Services`,
-			size: 50,
+			size: 170,
 			Icon: TerminalSquareIcon,
 			header: sortableHeader,
 			hideSort: true,
@@ -387,7 +389,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			},
 			id: "traffic",
 			name: () => t`Traffic`,
-			size: 100,
+			size: 230,
 			Icon: GaugeIcon,
 			header: sortableHeader,
 			sortUndefined: "last",
@@ -444,7 +446,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			},
 			id: "subscription",
 			name: () => t`Subscription`,
-			size: 70,
+			size: 130,
 			Icon: CalendarClockIcon,
 			header: sortableHeader,
 			sortUndefined: "last",
@@ -468,7 +470,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			accessorFn: ({ info }) => info.u || undefined,
 			id: "uptime",
 			name: () => t`Uptime`,
-			size: 50,
+			size: 120,
 			Icon: ClockArrowUp,
 			header: sortableHeader,
 			hideSort: true,
@@ -484,7 +486,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			accessorFn: ({ info }) => info.v,
 			id: "agent",
 			name: () => t`Agent`,
-			size: 50,
+			size: 100,
 			Icon: WifiIcon,
 			hideSort: true,
 			header: sortableHeader,
@@ -526,7 +528,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			id: "actions",
 			// @ts-expect-error
 			name: () => t({ message: "Actions", comment: "Table column" }),
-			size: 50,
+			size: 96,
 			cell: ({ row }) => (
 				<div className="relative z-10 flex justify-end items-center gap-1 -ms-3">
 					<AlertButton system={row.original} />

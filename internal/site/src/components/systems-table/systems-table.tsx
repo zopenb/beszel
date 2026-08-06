@@ -24,7 +24,6 @@ import {
 	FilterIcon,
 	LayoutGridIcon,
 	LayoutListIcon,
-	RotateCcwIcon,
 	Settings2Icon,
 	XIcon,
 } from "lucide-react"
@@ -42,6 +41,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { SystemStatus } from "@/lib/enums"
 import { $downSystems, $pausedSystems, $systems, $upSystems } from "@/lib/stores"
@@ -75,6 +75,7 @@ export default function SystemsTable() {
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 	const [columnVisibility, setColumnVisibility] = useBrowserStorage<VisibilityState>("cols", {})
 	const [savedColumnOrder, setColumnOrder] = useBrowserStorage<ColumnOrderState>("colOrder", [])
+	const [columnOrderOpen, setColumnOrderOpen] = useState(false)
 
 	const locale = i18n.locale
 
@@ -144,9 +145,9 @@ export default function SystemsTable() {
 		defaultColumn: {
 			invertSorting: true,
 			sortUndefined: "last",
-			minSize: 0,
-			size: 900,
-			maxSize: 900,
+			minSize: 80,
+			size: 120,
+			maxSize: 300,
 		},
 	})
 
@@ -204,9 +205,12 @@ export default function SystemsTable() {
 									<Trans>View</Trans>
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end" className="h-72 lg:h-auto min-w-48 lg:min-w-auto overflow-y-auto">
-								<div className="grid grid-cols-1 lg:grid-cols-5 divide-y lg:divide-s lg:divide-y-0">
-									<div className="border-r">
+							<DropdownMenuContent
+								align="end"
+								className="h-72 w-52 max-h-[calc(100dvh-2rem)] overflow-y-auto sm:h-auto sm:w-[36rem]"
+							>
+								<div className="grid grid-cols-1 divide-y sm:grid-cols-3 sm:grid-rows-2 sm:divide-y-0">
+									<div className="sm:col-start-1 sm:row-start-1 sm:border-e sm:border-b">
 										<DropdownMenuLabel className="pt-2 px-3.5 flex items-center gap-2">
 											<LayoutGridIcon className="size-4" />
 											<Trans>Layout</Trans>
@@ -228,7 +232,7 @@ export default function SystemsTable() {
 										</DropdownMenuRadioGroup>
 									</div>
 
-									<div className="border-r">
+									<div className="sm:col-start-1 sm:row-start-2 sm:border-e">
 										<DropdownMenuLabel className="pt-2 px-3.5 flex items-center gap-2">
 											<FilterIcon className="size-4" />
 											<Trans>Status</Trans>
@@ -254,7 +258,7 @@ export default function SystemsTable() {
 										</DropdownMenuRadioGroup>
 									</div>
 
-									<div className="border-r">
+									<div className="sm:col-start-2 sm:row-start-1 sm:row-span-2 sm:border-e">
 										<DropdownMenuLabel className="pt-2 px-3.5 flex items-center gap-2">
 											<ArrowUpDownIcon className="size-4" />
 											<Trans>Sort By</Trans>
@@ -289,7 +293,7 @@ export default function SystemsTable() {
 										</div>
 									</div>
 
-									<div>
+									<div className="sm:col-start-3 sm:row-start-1 sm:row-span-2">
 										<DropdownMenuLabel className="pt-2 px-3.5 flex items-center gap-2">
 											<EyeIcon className="size-4" />
 											<Trans>Visible Fields</Trans>
@@ -312,72 +316,11 @@ export default function SystemsTable() {
 													)
 												})}
 										</div>
-									</div>
-
-									<div className="min-w-52">
-										<DropdownMenuLabel className="pt-2 px-3.5 flex items-center gap-2">
-											<ArrowUpDownIcon className="size-4" />
-											<Trans>Column Order</Trans>
-											<Button
-												type="button"
-												variant="ghost"
-												size="icon"
-												className="ms-auto size-6"
-												aria-label={t`Reset column order`}
-												title={t`Reset column order`}
-												onClick={(event) => {
-													event.preventDefault()
-													event.stopPropagation()
-													setColumnOrder([])
-												}}
-											>
-												<RotateCcwIcon className="size-3.5" />
-											</Button>
-										</DropdownMenuLabel>
 										<DropdownMenuSeparator />
-										<div className="px-1.5 pb-1">
-											{reorderableColumns.map((column, index) => {
-												// @ts-expect-error custom column metadata
-												const name = column.columnDef.name()
-												return (
-													<div key={column.id} className="flex h-8 items-center gap-1 rounded-sm px-2 text-[.95em]">
-														<span className="min-w-0 flex-1 truncate">{name}</span>
-														<Button
-															type="button"
-															variant="ghost"
-															size="icon"
-															className="size-6"
-															disabled={index === 0}
-															aria-label={t`Move ${name} up`}
-															title={t`Move ${name} up`}
-															onClick={(event) => {
-																event.preventDefault()
-																event.stopPropagation()
-																moveColumn(column.id, -1)
-															}}
-														>
-															<ArrowUpIcon className="size-3.5" />
-														</Button>
-														<Button
-															type="button"
-															variant="ghost"
-															size="icon"
-															className="size-6"
-															disabled={index === reorderableColumns.length - 1}
-															aria-label={t`Move ${name} down`}
-															title={t`Move ${name} down`}
-															onClick={(event) => {
-																event.preventDefault()
-																event.stopPropagation()
-																moveColumn(column.id, 1)
-															}}
-														>
-															<ArrowDownIcon className="size-3.5" />
-														</Button>
-													</div>
-												)
-											})}
-										</div>
+										<DropdownMenuItem onSelect={() => setColumnOrderOpen(true)}>
+											<ArrowUpDownIcon className="me-2 size-4" />
+											<Trans>Adjust column order</Trans>
+										</DropdownMenuItem>
 									</div>
 								</div>
 							</DropdownMenuContent>
@@ -397,31 +340,84 @@ export default function SystemsTable() {
 		downSystemsLength,
 		pausedSystemsLength,
 		filter,
+		columnOrderOpen,
 	])
 
 	return (
-		<Card className="w-full px-3 py-5 sm:py-6 sm:px-6">
-			{CardHead}
-			{viewMode === "table" ? (
-				// table layout
-				<div className="rounded-md">
-					<AllSystemsTable table={table} rows={rows} colLength={visibleColumns.length} />
-				</div>
-			) : (
-				// grid layout
-				<div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-					{rows?.length ? (
-						rows.map((row) => {
-							return <SystemCard key={row.original.id} row={row} table={table} colLength={visibleColumns.length} />
-						})
-					) : (
-						<div className="col-span-full text-center py-8">
-							<Trans>No systems found.</Trans>
-						</div>
-					)}
-				</div>
-			)}
-		</Card>
+		<>
+			<Card className="w-full px-3 py-5 sm:py-6 sm:px-6">
+				{CardHead}
+				{viewMode === "table" ? (
+					// table layout
+					<div className="rounded-md">
+						<AllSystemsTable table={table} rows={rows} colLength={visibleColumns.length} />
+					</div>
+				) : (
+					// grid layout
+					<div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+						{rows?.length ? (
+							rows.map((row) => {
+								return <SystemCard key={row.original.id} row={row} table={table} colLength={visibleColumns.length} />
+							})
+						) : (
+							<div className="col-span-full text-center py-8">
+								<Trans>No systems found.</Trans>
+							</div>
+						)}
+					</div>
+				)}
+			</Card>
+			<Sheet open={columnOrderOpen} onOpenChange={setColumnOrderOpen}>
+				<SheetContent className="w-full overflow-y-auto p-0 sm:max-w-sm">
+					<SheetHeader className="border-b p-6">
+						<SheetTitle>
+							<Trans>Column Order</Trans>
+						</SheetTitle>
+						<SheetDescription>
+							<Trans>Reorder the fields shown between System and Actions.</Trans>
+						</SheetDescription>
+					</SheetHeader>
+					<div className="grid gap-2 p-6">
+						{reorderableColumns.map((column, index) => {
+							// @ts-expect-error custom column metadata
+							const name = column.columnDef.name()
+							return (
+								<div key={column.id} className="flex h-11 items-center gap-2 rounded-md border bg-card px-3">
+									<span className="min-w-0 flex-1 truncate font-medium">{name}</span>
+									<Button
+										type="button"
+										variant="ghost"
+										size="icon"
+										className="size-8"
+										disabled={index === 0}
+										aria-label={t`Move ${name} up`}
+										title={t`Move ${name} up`}
+										onClick={() => moveColumn(column.id, -1)}
+									>
+										<ArrowUpIcon className="size-4" />
+									</Button>
+									<Button
+										type="button"
+										variant="ghost"
+										size="icon"
+										className="size-8"
+										disabled={index === reorderableColumns.length - 1}
+										aria-label={t`Move ${name} down`}
+										title={t`Move ${name} down`}
+										onClick={() => moveColumn(column.id, 1)}
+									>
+										<ArrowDownIcon className="size-4" />
+									</Button>
+								</div>
+							)
+						})}
+						<Button type="button" variant="outline" className="mt-2" onClick={() => setColumnOrder([])}>
+							<Trans>Reset column order</Trans>
+						</Button>
+					</div>
+				</SheetContent>
+			</Sheet>
+		</>
 	)
 }
 
@@ -452,7 +448,7 @@ const AllSystemsTable = memo(
 			>
 				{/* add header height to table size */}
 				<div style={{ height: `${virtualizer.getTotalSize() + 50}px`, paddingTop, paddingBottom }}>
-					<table className="text-sm w-full h-full">
+					<table className="h-full w-full text-sm" style={{ minWidth: table.getTotalSize() }}>
 						<SystemsTableHead table={table} />
 						<TableBody onMouseEnter={preloadSystemDetail}>
 							{rows.length ? (
@@ -491,7 +487,15 @@ function SystemsTableHead({ table }: { table: TableType<SystemRecord> }) {
 				<tr key={headerGroup.id}>
 					{headerGroup.headers.map((header) => {
 						return (
-							<TableHead className="px-1.5" key={header.id}>
+							<TableHead
+								className={cn(
+									"px-1.5",
+									header.column.id === "system" && "sticky start-0 z-20 bg-table-header",
+									header.column.id === "actions" && "sticky end-0 z-20 bg-table-header"
+								)}
+								key={header.id}
+								style={{ width: header.getSize() }}
+							>
 								{flexRender(header.column.columnDef.header, header.getContext())}
 							</TableHead>
 						)
@@ -519,7 +523,7 @@ const SystemTableRow = memo(
 			return (
 				<TableRow
 					// data-state={row.getIsSelected() && "selected"}
-					className={cn("cursor-pointer transition-opacity relative safari:transform-3d", {
+					className={cn("group cursor-pointer transition-opacity relative safari:transform-3d", {
 						"opacity-50": system.status === SystemStatus.Paused,
 					})}
 				>
@@ -530,7 +534,13 @@ const SystemTableRow = memo(
 								width: cell.column.getSize(),
 								height: virtualRow.size,
 							}}
-							className="py-0 ps-4.5"
+							className={cn(
+								"py-0 ps-4.5",
+								cell.column.id === "system" &&
+									"sticky start-0 z-20 bg-card group-hover:bg-muted/40 dark:group-hover:bg-muted/20",
+								cell.column.id === "actions" &&
+									"sticky end-0 z-20 bg-card group-hover:bg-muted/40 dark:group-hover:bg-muted/20"
+							)}
 						>
 							{flexRender(cell.column.columnDef.cell, cell.getContext())}
 						</TableCell>
