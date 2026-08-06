@@ -7,6 +7,8 @@ import { getPagePath } from "@nanostores/router"
 import type { CellContext, ColumnDef, HeaderContext } from "@tanstack/react-table"
 import type { ClassValue } from "clsx"
 import {
+	ArrowDownIcon,
+	ArrowUpIcon,
 	ArrowUpDownIcon,
 	CalendarClockIcon,
 	ChevronRightSquareIcon,
@@ -547,12 +549,19 @@ function sortableHeader(context: HeaderContext<SystemRecord, unknown>) {
 	return (
 		<Button
 			variant="ghost"
-			className={cn("h-9 px-3 flex duration-50", isSorted && "bg-accent/70 light:bg-accent text-accent-foreground/90")}
+			className={cn("h-9 px-3 flex duration-50 hover:bg-transparent", isSorted && "text-foreground")}
 			onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 		>
 			{Icon && <Icon className="me-2 size-4" />}
 			{name()}
-			{hideSort || <ArrowUpDownIcon className="ms-2 size-4" />}
+			{hideSort ||
+				(isSorted === "asc" ? (
+					<ArrowUpIcon className="ms-2 size-4" />
+				) : isSorted === "desc" ? (
+					<ArrowDownIcon className="ms-2 size-4" />
+				) : (
+					<ArrowUpDownIcon className="ms-2 size-4 opacity-60" />
+				))}
 		</Button>
 	)
 }
