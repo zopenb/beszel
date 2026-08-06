@@ -129,6 +129,10 @@ msgstr "{foo} 추가"
 msgid "Add URL"
 msgstr "URL 추가"
 
+#: src/components/systems-table/systems-table.tsx
+msgid "Adjust column order"
+msgstr ""
+
 #: src/components/routes/settings/general.tsx
 msgid "Adjust display options for charts."
 msgstr "차트 표시 옵션 변경."
@@ -1456,6 +1460,10 @@ msgstr "관계"
 msgid "Remaining"
 msgstr ""
 
+#: src/components/systems-table/systems-table.tsx
+msgid "Reorder the fields shown between System and Actions."
+msgstr ""
+
 #: src/components/login/login.tsx
 msgid "Request a one-time password"
 msgstr "OTP 요청"
@@ -1472,7 +1480,6 @@ msgstr "필요한 대상"
 msgid "Requires"
 msgstr "필요 항목"
 
-#: src/components/systems-table/systems-table.tsx
 #: src/components/systems-table/systems-table.tsx
 msgid "Reset column order"
 msgstr ""

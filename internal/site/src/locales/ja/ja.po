@@ -129,6 +129,10 @@ msgstr "{foo}を追加"
 msgid "Add URL"
 msgstr "URLを追加"
 
+#: src/components/systems-table/systems-table.tsx
+msgid "Adjust column order"
+msgstr ""
+
 #: src/components/routes/settings/general.tsx
 msgid "Adjust display options for charts."
 msgstr "チャートの表示オプションを調整します。"
@@ -1456,6 +1460,10 @@ msgstr "関係"
 msgid "Remaining"
 msgstr ""
 
+#: src/components/systems-table/systems-table.tsx
+msgid "Reorder the fields shown between System and Actions."
+msgstr ""
+
 #: src/components/login/login.tsx
 msgid "Request a one-time password"
 msgstr "ワンタイムパスワードをリクエスト"
@@ -1472,7 +1480,6 @@ msgstr "必要とされる"
 msgid "Requires"
 msgstr "必要とする"
 
-#: src/components/systems-table/systems-table.tsx
 #: src/components/systems-table/systems-table.tsx
 msgid "Reset column order"
 msgstr ""

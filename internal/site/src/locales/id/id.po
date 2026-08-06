@@ -129,6 +129,10 @@ msgstr "Tambah {foo}"
 msgid "Add URL"
 msgstr "Tambah URL"
 
+#: src/components/systems-table/systems-table.tsx
+msgid "Adjust column order"
+msgstr ""
+
 #: src/components/routes/settings/general.tsx
 msgid "Adjust display options for charts."
 msgstr "Sesuaikan tampilan grafik."
@@ -1456,6 +1460,10 @@ msgstr "Relasi"
 msgid "Remaining"
 msgstr ""
 
+#: src/components/systems-table/systems-table.tsx
+msgid "Reorder the fields shown between System and Actions."
+msgstr ""
+
 #: src/components/login/login.tsx
 msgid "Request a one-time password"
 msgstr "Minta kata sandi sekali pakai"
@@ -1472,7 +1480,6 @@ msgstr "Diperlukan oleh"
 msgid "Requires"
 msgstr "Memerlukan"
 
-#: src/components/systems-table/systems-table.tsx
 #: src/components/systems-table/systems-table.tsx
 msgid "Reset column order"
 msgstr ""
