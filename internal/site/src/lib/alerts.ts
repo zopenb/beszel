@@ -1,5 +1,5 @@
 import { t } from "@lingui/core/macro"
-import { CpuIcon, HardDriveIcon, MemoryStickIcon, ServerIcon } from "lucide-react"
+import { CpuIcon, GaugeIcon, HardDriveIcon, MemoryStickIcon, ServerIcon } from "lucide-react"
 import type { RecordSubscription } from "pocketbase"
 import { EthernetIcon, GpuIcon } from "@/components/ui/icons"
 import { $alerts } from "@/lib/stores"
@@ -41,6 +41,18 @@ export const alertInfo: Record<string, AlertInfo> = {
 		icon: EthernetIcon,
 		desc: () => t`Triggers when combined up/down exceeds a threshold`,
 		max: 250,
+	},
+	TrafficQuota: {
+		name: () => t`Traffic Quota`,
+		unit: "%",
+		icon: GaugeIcon,
+		desc: () => t`Triggers when monthly traffic quota usage exceeds a threshold`,
+		start: 90,
+		min: 1,
+		max: 100,
+		noDuration: true,
+		requiresTrafficQuota: true,
+		activeDesc: (value) => t`Monthly traffic quota usage exceeds ${value}%`,
 	},
 	GPU: {
 		name: () => t`GPU Usage`,

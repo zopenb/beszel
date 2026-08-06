@@ -14,9 +14,10 @@ import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "@/components/ui/use-toast"
 import { alertInfo } from "@/lib/alerts"
-import { pb } from "@/lib/api"
+import { isReadOnlyUser, pb } from "@/lib/api"
 import { $alerts, $systems } from "@/lib/stores"
 import { cn, debounce } from "@/lib/utils"
+import { hasTrafficQuota } from "@/lib/traffic"
 import type { AlertInfo, AlertRecord, SystemRecord } from "@/types"
 
 const Slider = lazy(() => import("@/components/ui/slider"))
@@ -86,10 +87,14 @@ export const AlertDialogContent = memo(function AlertDialogContent({ system }: {
 		if (!sourceAlerts?.size) return
 		try {
 			const currentTargetAlerts = $alerts.get()[system.id] ?? new Map()
+			const applicableSourceAlerts = Array.from(sourceAlerts.values()).filter(
+				(alert) => alert.name !== "TrafficQuota" || hasTrafficQuota(system)
+			)
 			// Alert names present on target but absent from source should be deleted
-			const namesToDelete = Array.from(currentTargetAlerts.keys()).filter((name) => !sourceAlerts.has(name))
+			const applicableNames = new Set(applicableSourceAlerts.map((alert) => alert.name))
+			const namesToDelete = Array.from(currentTargetAlerts.keys()).filter((name) => !applicableNames.has(name))
 			await Promise.all([
-				...Array.from(sourceAlerts.values()).map(({ name, value, min }) =>
+				...applicableSourceAlerts.map(({ name, value, min }) =>
 					pb.send<{ success: boolean }>(endpoint, {
 						method: "POST",
 						body: { name, value, min, systems: [system.id], overwrite: true },
@@ -107,7 +112,7 @@ export const AlertDialogContent = memo(function AlertDialogContent({ system }: {
 			// Optimistically update the store so components re-mount with correct data
 			// before the realtime subscription event arrives.
 			const newSystemAlerts = new Map<string, AlertRecord>()
-			for (const alert of sourceAlerts.values()) {
+			for (const alert of applicableSourceAlerts) {
 				newSystemAlerts.set(alert.name, { ...alert, system: system.id, triggered: false })
 			}
 			$alerts.setKey(system.id, newSystemAlerts)
@@ -152,7 +157,7 @@ export const AlertDialogContent = memo(function AlertDialogContent({ system }: {
 							<Trans>All Systems</Trans>
 						</TabsTrigger>
 					</TabsList>
-					{systemsWithAlerts.length > 0 && currentTab === "system" && (
+					{!isReadOnlyUser() && systemsWithAlerts.length > 0 && currentTab === "system" && (
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
 								<Button variant="ghost" size="sm" className="text-muted-foreground text-xs gap-1.5">
@@ -238,8 +243,11 @@ export function AlertContent({
 	const singleDescription = alertData.singleDesc?.()
 
 	const [checked, setChecked] = useState(global ? false : !!alert)
-	const [min, setMin] = useState(alert?.min || 10)
+	const [min, setMin] = useState(alert?.min ?? (alertData.noDuration ? 0 : 10))
 	const [value, setValue] = useState(alert?.value || (singleDescription ? 0 : (alertData.start ?? 80)))
+	const unavailable =
+		alertData.requiresTrafficQuota && (global ? !$systems.get().some(hasTrafficQuota) : !hasTrafficQuota(system))
+	const readonly = isReadOnlyUser()
 
 	const Icon = alertData.icon
 
@@ -254,6 +262,7 @@ export function AlertContent({
 		const allSystems = $systems.get()
 		const systemIds: string[] = []
 		for (const system of allSystems) {
+			if (alertData.requiresTrafficQuota && !hasTrafficQuota(system)) continue
 			if (overwriteExisting || !initialAlertsState[system.id]?.has(alertKey)) {
 				systemIds.push(system.id)
 			}
@@ -273,7 +282,12 @@ export function AlertContent({
 	}
 
 	return (
-		<div className="rounded-lg border border-muted-foreground/15 hover:border-muted-foreground/20 transition-colors duration-100 group">
+		<div
+			className={cn(
+				"rounded-lg border border-muted-foreground/15 hover:border-muted-foreground/20 transition-colors duration-100 group",
+				unavailable && "opacity-60"
+			)}
+		>
 			<label
 				htmlFor={`s${name}`}
 				className={cn("flex flex-row items-center justify-between gap-4 cursor-pointer p-4", {
@@ -284,11 +298,16 @@ export function AlertContent({
 					<p className="font-semibold flex gap-3 items-center">
 						<Icon className="h-4 w-4 opacity-85" /> {alertData.name()}
 					</p>
-					{!checked && <span className="block text-sm text-muted-foreground">{alertData.desc()}</span>}
+					{!checked && (
+						<span className="block text-sm text-muted-foreground">
+							{unavailable ? <Trans>Set a monthly traffic quota to enable this alert.</Trans> : alertData.desc()}
+						</span>
+					)}
 				</div>
 				<Switch
 					id={`s${name}`}
 					checked={checked}
+					disabled={readonly || (unavailable && !checked)}
 					onCheckedChange={(newChecked) => {
 						setChecked(newChecked)
 						if (newChecked) {
@@ -308,7 +327,12 @@ export function AlertContent({
 				/>
 			</label>
 			{checked && (
-				<div className="grid sm:grid-cols-2 mt-1.5 gap-5 px-4 pb-5 tabular-nums text-muted-foreground">
+				<div
+					className={cn(
+						"grid sm:grid-cols-2 mt-1.5 gap-5 px-4 pb-5 tabular-nums text-muted-foreground",
+						alertData.noDuration && "sm:grid-cols-1"
+					)}
+				>
 					<Suspense fallback={<div className="h-10" />}>
 						{!singleDescription && (
 							<div>
@@ -316,6 +340,14 @@ export function AlertContent({
 									{alertData.invert ? (
 										<Trans>
 											Average drops below{" "}
+											<strong className="text-foreground">
+												{value}
+												{alertData.unit}
+											</strong>
+										</Trans>
+									) : alertData.noDuration ? (
+										<Trans>
+											Usage exceeds{" "}
 											<strong className="text-foreground">
 												{value}
 												{alertData.unit}
@@ -340,6 +372,7 @@ export function AlertContent({
 										step={alertData.step ?? 1}
 										min={alertData.min ?? 1}
 										max={alertData.max ?? 99}
+										disabled={readonly}
 									/>
 									<Input
 										type="number"
@@ -356,50 +389,55 @@ export function AlertContent({
 										step={alertData.step ?? 1}
 										min={alertData.min ?? 1}
 										max={alertData.max ?? 99}
+										disabled={readonly}
 										className="w-16 h-8 text-center px-1"
 									/>
 								</div>
 							</div>
 						)}
-						<div className={cn(singleDescription && "col-span-full lowercase")}>
-							<p id={`t${name}`} className="text-sm block h-6 first-letter:uppercase">
-								{singleDescription && (
-									<>
-										{singleDescription}
-										{` `}
-									</>
-								)}
-								<Trans>
-									For <strong className="text-foreground">{min}</strong>{" "}
-									<Plural value={min} one="minute" other="minutes" />
-								</Trans>
-							</p>
-							<div className="flex gap-3 items-center">
-								<Slider
-									aria-labelledby={`t${name}`}
-									value={[min]}
-									onValueCommit={(val) => sendUpsert(val[0], value)}
-									onValueChange={(val) => setMin(val[0])}
-									min={1}
-									max={60}
-								/>
-								<Input
-									type="number"
-									value={min}
-									onChange={(e) => {
-										let val = parseInt(e.target.value, 10)
-										if (!Number.isNaN(val)) {
-											val = Math.max(1, Math.min(val, 60))
-											setMin(val)
-											sendUpsert(val, value)
-										}
-									}}
-									min={1}
-									max={60}
-									className="w-16 h-8 text-center px-1"
-								/>
+						{!alertData.noDuration && (
+							<div className={cn(singleDescription && "col-span-full lowercase")}>
+								<p id={`t${name}`} className="text-sm block h-6 first-letter:uppercase">
+									{singleDescription && (
+										<>
+											{singleDescription}
+											{` `}
+										</>
+									)}
+									<Trans>
+										For <strong className="text-foreground">{min}</strong>{" "}
+										<Plural value={min} one="minute" other="minutes" />
+									</Trans>
+								</p>
+								<div className="flex gap-3 items-center">
+									<Slider
+										aria-labelledby={`t${name}`}
+										value={[min]}
+										onValueCommit={(val) => sendUpsert(val[0], value)}
+										onValueChange={(val) => setMin(val[0])}
+										min={1}
+										max={60}
+										disabled={readonly}
+									/>
+									<Input
+										type="number"
+										value={min}
+										onChange={(e) => {
+											let val = parseInt(e.target.value, 10)
+											if (!Number.isNaN(val)) {
+												val = Math.max(1, Math.min(val, 60))
+												setMin(val)
+												sendUpsert(val, value)
+											}
+										}}
+										min={1}
+										max={60}
+										disabled={readonly}
+										className="w-16 h-8 text-center px-1"
+									/>
+								</div>
 							</div>
-						</div>
+						)}
 					</Suspense>
 				</div>
 			)}

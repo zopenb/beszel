@@ -1,7 +1,7 @@
 import { alertInfo } from "@/lib/alerts"
 import { $alerts, $allSystemsById } from "@/lib/stores"
 import type { AlertRecord } from "@/types"
-import { Plural, Trans } from "@lingui/react/macro"
+import { Plural, Trans, useLingui } from "@lingui/react/macro"
 import { useStore } from "@nanostores/react"
 import { getPagePath } from "@nanostores/router"
 import { useMemo } from "react"
@@ -10,6 +10,7 @@ import { Alert, AlertTitle, AlertDescription } from "./ui/alert"
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card"
 
 export const ActiveAlerts = () => {
+	const { t } = useLingui()
 	const alerts = useStore($alerts)
 	const systems = useStore($allSystemsById)
 
@@ -22,7 +23,7 @@ export const ActiveAlerts = () => {
 			for (const alert of alerts[systemId].values()) {
 				if (alert.triggered && alert.name in alertInfo) {
 					activeAlerts.push(alert)
-					alertsKey.push(`${alert.system}${alert.value}${alert.min}`)
+					alertsKey.push(`${alert.system}${alert.name}${alert.value}${alert.min}`)
 				}
 			}
 		}
@@ -30,7 +31,6 @@ export const ActiveAlerts = () => {
 		return { activeAlerts, alertsKey }
 	}, [alerts])
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: alertsKey is inclusive
 	return useMemo(() => {
 		if (activeAlerts.length === 0) {
 			return null
@@ -59,7 +59,9 @@ export const ActiveAlerts = () => {
 											{systems[alert.system]?.name} {info.name()}
 										</AlertTitle>
 										<AlertDescription>
-											{alert.name === "Status" ? (
+											{info.activeDesc ? (
+												info.activeDesc(alert.value)
+											) : alert.name === "Status" ? (
 												<Trans>Connection is down</Trans>
 											) : info.invert ? (
 												<Trans>
@@ -76,7 +78,7 @@ export const ActiveAlerts = () => {
 										<Link
 											href={getPagePath($router, "system", { id: systems[alert.system]?.id })}
 											className="absolute inset-0 w-full h-full"
-											aria-label="View system"
+											aria-label={t`View system`}
 										></Link>
 									</Alert>
 								)
@@ -86,5 +88,5 @@ export const ActiveAlerts = () => {
 				</CardContent>
 			</Card>
 		)
-	}, [alertsKey.join("")])
+	}, [alertsKey.join(""), t])
 }
