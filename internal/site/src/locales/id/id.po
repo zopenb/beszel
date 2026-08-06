@@ -155,6 +155,10 @@ msgstr "Setelah mengatur variabel lingkungan, restart hub Beszel Anda agar perub
 msgid "Agent"
 msgstr "Agen"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Agent statistics"
+msgstr ""
+
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/layout.tsx
@@ -286,6 +290,10 @@ msgstr "Beszel mendukung OpenID Connect dan OAuth2 dari berbagai penyedia layana
 msgid "Beszel uses <0>Shoutrrr</0> to integrate with popular notification services."
 msgstr "Beszel menggunakan <0>Shoutrrr</0> untuk mengintegrasikan dengan penyedia layanan notifikasi."
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Billing day"
+msgstr ""
+
 #: src/components/add-system.tsx
 msgid "Binary"
 msgstr "Binari"
@@ -322,6 +330,7 @@ msgstr "Dapat diberhentikan"
 
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/quiet-hours.tsx
+#: src/components/routes/system/traffic-quota.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Cancel"
 msgstr "Batal"
@@ -342,6 +351,14 @@ msgstr "Perhatian - potensi kehilangan data"
 msgid "Celsius (°C)"
 msgstr ""
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Change billing day"
+msgstr ""
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Change billing day?"
+msgstr ""
+
 #: src/components/routes/settings/general.tsx
 msgid "Change display units for metrics."
 msgstr "Ubah tampilan satuan untuk metrik."
@@ -349,6 +366,10 @@ msgstr "Ubah tampilan satuan untuk metrik."
 #: src/components/routes/settings/general.tsx
 msgid "Change general application options."
 msgstr "Ubah pengaturan umum aplikasi."
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Changing the billing day may start a new cycle and reset the current traffic usage."
+msgstr ""
 
 #: src/components/routes/system/charts/sensor-charts.tsx
 msgid "Charge"
@@ -413,6 +434,10 @@ msgstr "Instruksi command line"
 #: src/components/routes/settings/notifications.tsx
 msgid "Configure how you receive alert notifications."
 msgstr "Konfigurasi bagaimana anda menerima notifikasi peringatan."
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Configure the billing cycle and traffic counted for this system."
+msgstr ""
 
 #: src/components/login/auth-form.tsx
 #: src/components/login/auth-form.tsx
@@ -555,15 +580,27 @@ msgstr "Akumulasi Upload"
 msgid "Current state"
 msgstr "Status saat ini"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Cycle"
+msgstr ""
+
 #. Power Cycles
 #: src/components/routes/system/smart-table.tsx
 msgid "Cycles"
 msgstr "Siklus"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Cycles use Asia/Shanghai time. For shorter months, day 29-31 uses the month's last day."
+msgstr ""
+
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Daily"
 msgstr "Harian"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Decimal units are used: 1 GB = 1,000,000,000 bytes. Set the quota to 0 to disable it."
+msgstr ""
 
 #: src/components/routes/system/info-bar.tsx
 msgctxt "Default system layout option"
@@ -705,6 +742,10 @@ msgstr "URL Titik Akhir"
 msgid "Endpoint URL to ping (required)"
 msgstr "URL titik akhir untuk di-ping (diperlukan)"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Enter a quota that resolves to a whole number of bytes."
+msgstr ""
+
 #: src/components/login/login.tsx
 msgid "Enter email address to reset password"
 msgstr "Masukkan alamat email untuk mereset kata sandi"
@@ -810,6 +851,10 @@ msgstr "Gagal mengirim tes notifikasi"
 #: src/components/alerts/alerts-sheet.tsx
 msgid "Failed to update alert"
 msgstr "Gagal memperbarui peringatan"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Failed to update traffic quota"
+msgstr ""
 
 #. placeholder {0}: statusTotals[ServiceStatus.Failed]
 #: src/components/systemd-table/systemd-table.tsx
@@ -1083,6 +1128,27 @@ msgstr "Penggunaan memori kontainer docker"
 msgid "Model"
 msgstr ""
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Monthly quota"
+msgstr ""
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Monthly traffic"
+msgstr ""
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Monthly traffic quota"
+msgstr ""
+
+#: src/lib/alerts.ts
+msgid "Monthly traffic quota usage exceeds {value}%"
+msgstr ""
+
+#: src/components/routes/system/traffic-quota.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Monthly traffic quota used"
+msgstr ""
+
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
@@ -1118,6 +1184,10 @@ msgstr "Unit jaringan"
 msgid "No"
 msgstr "Tidak"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "No monthly traffic quota is set."
+msgstr ""
+
 #: src/components/command-palette.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "No results found."
@@ -1141,6 +1211,7 @@ msgstr "Tidak ada atribut S.M.A.R.T. yang tersedia untuk perangkat ini."
 msgid "No systems found."
 msgstr "Sistem tidak ditemukan."
 
+#: src/components/systems-table/systems-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Not set"
 msgstr ""
@@ -1336,6 +1407,14 @@ msgstr "Kedalaman Antrian"
 msgid "Quiet Hours"
 msgstr "Jam Tenang"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Quota"
+msgstr ""
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Quota unit"
+msgstr ""
+
 #. Disk read
 #: src/components/routes/system/charts/disk-charts.tsx
 #: src/components/routes/system/disk-io-sheet.tsx
@@ -1345,6 +1424,7 @@ msgid "Read"
 msgstr "Baca"
 
 #: src/components/routes/system/charts/network-charts.tsx
+#: src/components/routes/system/traffic-quota.tsx
 msgid "Received"
 msgstr "Diterima"
 
@@ -1357,6 +1437,10 @@ msgstr "Muat ulang"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Relationships"
 msgstr "Relasi"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Remaining"
+msgstr ""
 
 #: src/components/login/login.tsx
 msgid "Request a one-time password"
@@ -1417,6 +1501,10 @@ msgstr "Detail S.M.A.R.T."
 msgid "S.M.A.R.T. Self-Test"
 msgstr "Self-Test S.M.A.R.T."
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Save"
+msgstr ""
+
 #: src/components/add-system.tsx
 msgid "Save {foo}"
 msgstr "Simpan {foo}"
@@ -1433,6 +1521,10 @@ msgstr "Simpan Pengaturan"
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Saved in the database and does not expire until you disable it."
 msgstr "Disimpan di database dan tidak kedaluwarsa sampai Anda menonaktifkannya."
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Saving..."
+msgstr ""
 
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Schedule"
@@ -1479,8 +1571,17 @@ msgid "Send test heartbeat"
 msgstr "Kirim tes heartbeat"
 
 #: src/components/routes/system/charts/network-charts.tsx
+#: src/components/routes/system/traffic-quota.tsx
 msgid "Sent"
 msgstr "Dikirim"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Sent and received"
+msgstr ""
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Sent only"
+msgstr ""
 
 #: src/components/routes/system/smart-table.tsx
 msgid "Serial Number"
@@ -1494,6 +1595,10 @@ msgstr "Detail Layanan"
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Services"
 msgstr "Layanan"
+
+#: src/components/alerts/alerts-sheet.tsx
+msgid "Set a monthly traffic quota to enable this alert."
+msgstr ""
 
 #: src/components/routes/settings/general.tsx
 msgid "Set percentage thresholds for meter colors."
@@ -1528,6 +1633,10 @@ msgstr "Pengaturan SMTP"
 #: src/components/systems-table/systems-table.tsx
 msgid "Sort By"
 msgstr "Urutkan Berdasarkan"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Source"
+msgstr ""
 
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
@@ -1649,6 +1758,12 @@ msgstr "Tes heartbeat"
 msgid "Test notification sent"
 msgstr "Notifikasi tes dikirim"
 
+#. placeholder {0}: usage.reset_count
+#. placeholder {1}: usage.interface_change_count
+#: src/components/routes/system/traffic-quota.tsx
+msgid "The agent observed {0} counter resets and {1} interface changes during this cycle."
+msgstr ""
+
 #: src/components/routes/settings/heartbeat.tsx
 msgid "The overall status is <0>ok</0> when all systems are up, <1>warn</1> when alerts are triggered, and <2>error</2> when any system is down."
 msgstr "Status keseluruhan adalah <0>ok</0> ketika semua sistem aktif, <1>warn</1> ketika peringatan dipicu, dan <2>error</2> ketika ada sistem yang mati."
@@ -1728,6 +1843,31 @@ msgstr ""
 msgid "Total: {0}"
 msgstr ""
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Tracking started"
+msgstr ""
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Traffic"
+msgstr ""
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Traffic counted"
+msgstr ""
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Traffic data is incomplete"
+msgstr ""
+
+#: src/lib/alerts.ts
+msgid "Traffic Quota"
+msgstr ""
+
+#: src/components/routes/system/traffic-quota.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Traffic settings"
+msgstr ""
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Triggered by"
 msgstr "Dipicu oleh"
@@ -1771,6 +1911,10 @@ msgstr "Dipicu ketika penggunaan GPU melebihi ambang batas"
 #: src/lib/alerts.ts
 msgid "Triggers when memory usage exceeds a threshold"
 msgstr "Dipicu ketika penggunaan memori melebihi ambang batas"
+
+#: src/lib/alerts.ts
+msgid "Triggers when monthly traffic quota usage exceeds a threshold"
+msgstr ""
 
 #: src/lib/alerts.ts
 msgid "Triggers when status switches between up and down"
@@ -1851,12 +1995,18 @@ msgstr "Waktu aktif"
 msgid "Usage"
 msgstr "Penggunaan"
 
+#. placeholder {0}: alertData.unit
+#: src/components/alerts/alerts-sheet.tsx
+msgid "Usage exceeds <0>{value}{0}</0>"
+msgstr ""
+
 #: src/components/routes/system/charts/disk-charts.tsx
 msgid "Usage of root partition"
 msgstr "Penggunaan partisi root"
 
 #: src/components/routes/system/charts/memory-charts.tsx
 #: src/components/routes/system/charts/memory-charts.tsx
+#: src/components/routes/system/traffic-quota.tsx
 msgid "Used"
 msgstr "Digunakan"
 
@@ -1883,6 +2033,10 @@ msgstr "Lihat"
 #: src/components/routes/system/network-sheet.tsx
 msgid "View more"
 msgstr "Lihat lebih banyak"
+
+#: src/components/active-alerts.tsx
+msgid "View system"
+msgstr ""
 
 #: src/components/routes/settings/alerts-history-data-table.tsx
 msgid "View your 200 most recent alerts."
@@ -1951,6 +2105,10 @@ msgstr "Konfigurasi YAML"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Yes"
 msgstr "Ya"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "You have read-only access. Traffic settings cannot be changed."
+msgstr ""
 
 #: src/components/routes/settings/layout.tsx
 msgid "Your user settings have been updated."
