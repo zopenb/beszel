@@ -129,6 +129,10 @@ msgstr "新增{foo}"
 msgid "Add URL"
 msgstr "新增 URL"
 
+#: src/components/systems-table/systems-table.tsx
+msgid "Adjust column order"
+msgstr "調整欄位順序"
+
 #: src/components/routes/settings/general.tsx
 msgid "Adjust display options for charts."
 msgstr "調整圖表的顯示選項。"
@@ -1456,6 +1460,10 @@ msgstr "關係"
 msgid "Remaining"
 msgstr "剩餘"
 
+#: src/components/systems-table/systems-table.tsx
+msgid "Reorder the fields shown between System and Actions."
+msgstr "調整系統欄與操作欄之間欄位的順序。"
+
 #: src/components/login/login.tsx
 msgid "Request a one-time password"
 msgstr "請求一次性密碼"
@@ -1472,7 +1480,6 @@ msgstr "被依賴"
 msgid "Requires"
 msgstr "依賴"
 
-#: src/components/systems-table/systems-table.tsx
 #: src/components/systems-table/systems-table.tsx
 msgid "Reset column order"
 msgstr "重設欄位順序"
