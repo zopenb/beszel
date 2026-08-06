@@ -4,6 +4,7 @@ import { getPagePath } from "@nanostores/router"
 import {
 	type ColumnDef,
 	type ColumnFiltersState,
+	type ColumnOrderState,
 	flexRender,
 	getCoreRowModel,
 	getFilteredRowModel,
@@ -23,6 +24,7 @@ import {
 	FilterIcon,
 	LayoutGridIcon,
 	LayoutListIcon,
+	RotateCcwIcon,
 	Settings2Icon,
 	XIcon,
 } from "lucide-react"
@@ -53,6 +55,8 @@ import { SystemsTableColumns, ActionsButton, IndicatorDot } from "./systems-tabl
 type ViewMode = "table" | "grid"
 type StatusFilter = "all" | SystemRecord["status"]
 
+const FIXED_COLUMN_IDS = new Set(["system", "actions"])
+
 const preloadSystemDetail = runOnce(() => import("@/components/routes/system.tsx"))
 
 export default function SystemsTable() {
@@ -70,6 +74,7 @@ export default function SystemsTable() {
 	)
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 	const [columnVisibility, setColumnVisibility] = useBrowserStorage<VisibilityState>("cols", {})
+	const [savedColumnOrder, setColumnOrder] = useBrowserStorage<ColumnOrderState>("colOrder", [])
 
 	const locale = i18n.locale
 
@@ -100,6 +105,25 @@ export default function SystemsTable() {
 	}, [filter])
 
 	const columnDefs = useMemo(() => SystemsTableColumns(viewMode), [viewMode])
+	const defaultColumnOrder = useMemo(
+		() => columnDefs.map((column) => column.id).filter((id) => id !== undefined),
+		[columnDefs]
+	)
+	const columnOrder = useMemo(() => {
+		const movableIds = defaultColumnOrder.filter((id) => !FIXED_COLUMN_IDS.has(id))
+		const savedIds = savedColumnOrder.filter((id) => movableIds.includes(id))
+		const missingIds = movableIds.filter((id) => !savedIds.includes(id))
+		return ["system", ...savedIds, ...missingIds, "actions"]
+	}, [defaultColumnOrder, savedColumnOrder])
+
+	function moveColumn(columnId: string, offset: -1 | 1) {
+		const currentIndex = columnOrder.indexOf(columnId)
+		const nextIndex = currentIndex + offset
+		if (currentIndex <= 0 || nextIndex <= 0 || nextIndex >= columnOrder.length - 1) return
+		const nextOrder = [...columnOrder]
+		;[nextOrder[currentIndex], nextOrder[nextIndex]] = [nextOrder[nextIndex], nextOrder[currentIndex]]
+		setColumnOrder(nextOrder)
+	}
 
 	const table = useReactTable({
 		data: filteredData,
@@ -110,10 +134,12 @@ export default function SystemsTable() {
 		onColumnFiltersChange: setColumnFilters,
 		getFilteredRowModel: getFilteredRowModel(),
 		onColumnVisibilityChange: setColumnVisibility,
+		onColumnOrderChange: setColumnOrder,
 		state: {
 			sorting,
 			columnFilters,
 			columnVisibility,
+			columnOrder,
 		},
 		defaultColumn: {
 			invertSorting: true,
@@ -127,6 +153,11 @@ export default function SystemsTable() {
 	const rows = table.getRowModel().rows
 	const columns = table.getAllColumns()
 	const visibleColumns = table.getVisibleLeafColumns()
+	const columnsById = new Map(columns.map((column) => [column.id, column]))
+	const reorderableColumns = columnOrder
+		.filter((id) => !FIXED_COLUMN_IDS.has(id))
+		.map((id) => columnsById.get(id))
+		.filter((column) => column !== undefined)
 
 	const [upSystemsLength, downSystemsLength, pausedSystemsLength] = useMemo(() => {
 		return [Object.values(upSystems).length, Object.values(downSystems).length, Object.values(pausedSystems).length]
@@ -173,8 +204,8 @@ export default function SystemsTable() {
 									<Trans>View</Trans>
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end" className="h-72 md:h-auto min-w-48 md:min-w-auto overflow-y-auto">
-								<div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-s md:divide-y-0">
+							<DropdownMenuContent align="end" className="h-72 lg:h-auto min-w-48 lg:min-w-auto overflow-y-auto">
+								<div className="grid grid-cols-1 lg:grid-cols-5 divide-y lg:divide-s lg:divide-y-0">
 									<div className="border-r">
 										<DropdownMenuLabel className="pt-2 px-3.5 flex items-center gap-2">
 											<LayoutGridIcon className="size-4" />
@@ -282,6 +313,72 @@ export default function SystemsTable() {
 												})}
 										</div>
 									</div>
+
+									<div className="min-w-52">
+										<DropdownMenuLabel className="pt-2 px-3.5 flex items-center gap-2">
+											<ArrowUpDownIcon className="size-4" />
+											<Trans>Column Order</Trans>
+											<Button
+												type="button"
+												variant="ghost"
+												size="icon"
+												className="ms-auto size-6"
+												aria-label={t`Reset column order`}
+												title={t`Reset column order`}
+												onClick={(event) => {
+													event.preventDefault()
+													event.stopPropagation()
+													setColumnOrder([])
+												}}
+											>
+												<RotateCcwIcon className="size-3.5" />
+											</Button>
+										</DropdownMenuLabel>
+										<DropdownMenuSeparator />
+										<div className="px-1.5 pb-1">
+											{reorderableColumns.map((column, index) => {
+												// @ts-expect-error custom column metadata
+												const name = column.columnDef.name()
+												return (
+													<div key={column.id} className="flex h-8 items-center gap-1 rounded-sm px-2 text-[.95em]">
+														<span className="min-w-0 flex-1 truncate">{name}</span>
+														<Button
+															type="button"
+															variant="ghost"
+															size="icon"
+															className="size-6"
+															disabled={index === 0}
+															aria-label={t`Move ${name} up`}
+															title={t`Move ${name} up`}
+															onClick={(event) => {
+																event.preventDefault()
+																event.stopPropagation()
+																moveColumn(column.id, -1)
+															}}
+														>
+															<ArrowUpIcon className="size-3.5" />
+														</Button>
+														<Button
+															type="button"
+															variant="ghost"
+															size="icon"
+															className="size-6"
+															disabled={index === reorderableColumns.length - 1}
+															aria-label={t`Move ${name} down`}
+															title={t`Move ${name} down`}
+															onClick={(event) => {
+																event.preventDefault()
+																event.stopPropagation()
+																moveColumn(column.id, 1)
+															}}
+														>
+															<ArrowDownIcon className="size-3.5" />
+														</Button>
+													</div>
+												)
+											})}
+										</div>
+									</div>
 								</div>
 							</DropdownMenuContent>
 						</DropdownMenu>
@@ -291,6 +388,7 @@ export default function SystemsTable() {
 		)
 	}, [
 		visibleColumns.length,
+		columnOrder,
 		sorting,
 		viewMode,
 		locale,
