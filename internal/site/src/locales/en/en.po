@@ -150,6 +150,10 @@ msgstr "After setting the environment variables, restart your Beszel hub for cha
 msgid "Agent"
 msgstr "Agent"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Agent statistics"
+msgstr "Agent statistics"
+
 #: src/components/command-palette.tsx
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/layout.tsx
@@ -281,6 +285,10 @@ msgstr "Beszel supports OpenID Connect and many OAuth2 authentication providers.
 msgid "Beszel uses <0>Shoutrrr</0> to integrate with popular notification services."
 msgstr "Beszel uses <0>Shoutrrr</0> to integrate with popular notification services."
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Billing day"
+msgstr "Billing day"
+
 #: src/components/add-system.tsx
 msgid "Binary"
 msgstr "Binary"
@@ -317,6 +325,7 @@ msgstr "Can stop"
 
 #: src/components/routes/settings/alerts-history-data-table.tsx
 #: src/components/routes/settings/quiet-hours.tsx
+#: src/components/routes/system/traffic-quota.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Cancel"
 msgstr "Cancel"
@@ -337,6 +346,14 @@ msgstr "Caution - potential data loss"
 msgid "Celsius (°C)"
 msgstr "Celsius (°C)"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Change billing day"
+msgstr "Change billing day"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Change billing day?"
+msgstr "Change billing day?"
+
 #: src/components/routes/settings/general.tsx
 msgid "Change display units for metrics."
 msgstr "Change display units for metrics."
@@ -344,6 +361,10 @@ msgstr "Change display units for metrics."
 #: src/components/routes/settings/general.tsx
 msgid "Change general application options."
 msgstr "Change general application options."
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Changing the billing day may start a new cycle and reset the current traffic usage."
+msgstr "Changing the billing day may start a new cycle and reset the current traffic usage."
 
 #: src/components/routes/system/charts/sensor-charts.tsx
 msgid "Charge"
@@ -408,6 +429,10 @@ msgstr "Command line instructions"
 #: src/components/routes/settings/notifications.tsx
 msgid "Configure how you receive alert notifications."
 msgstr "Configure how you receive alert notifications."
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Configure the billing cycle and traffic counted for this system."
+msgstr "Configure the billing cycle and traffic counted for this system."
 
 #: src/components/login/auth-form.tsx
 #: src/components/login/auth-form.tsx
@@ -550,15 +575,27 @@ msgstr "Cumulative Upload"
 msgid "Current state"
 msgstr "Current state"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Cycle"
+msgstr "Cycle"
+
 #. Power Cycles
 #: src/components/routes/system/smart-table.tsx
 msgid "Cycles"
 msgstr "Cycles"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Cycles use Asia/Shanghai time. For shorter months, day 29-31 uses the month's last day."
+msgstr "Cycles use Asia/Shanghai time. For shorter months, day 29-31 uses the month's last day."
+
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Daily"
 msgstr "Daily"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Decimal units are used: 1 GB = 1,000,000,000 bytes. Set the quota to 0 to disable it."
+msgstr "Decimal units are used: 1 GB = 1,000,000,000 bytes. Set the quota to 0 to disable it."
 
 #: src/components/routes/system/info-bar.tsx
 msgctxt "Default system layout option"
@@ -700,6 +737,10 @@ msgstr "Endpoint URL"
 msgid "Endpoint URL to ping (required)"
 msgstr "Endpoint URL to ping (required)"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Enter a quota that resolves to a whole number of bytes."
+msgstr "Enter a quota that resolves to a whole number of bytes."
+
 #: src/components/login/login.tsx
 msgid "Enter email address to reset password"
 msgstr "Enter email address to reset password"
@@ -805,6 +846,10 @@ msgstr "Failed to send test notification"
 #: src/components/alerts/alerts-sheet.tsx
 msgid "Failed to update alert"
 msgstr "Failed to update alert"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Failed to update traffic quota"
+msgstr "Failed to update traffic quota"
 
 #. placeholder {0}: statusTotals[ServiceStatus.Failed]
 #: src/components/systemd-table/systemd-table.tsx
@@ -1078,6 +1123,27 @@ msgstr "Memory usage of docker containers"
 msgid "Model"
 msgstr "Model"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Monthly quota"
+msgstr "Monthly quota"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Monthly traffic"
+msgstr "Monthly traffic"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Monthly traffic quota"
+msgstr "Monthly traffic quota"
+
+#: src/lib/alerts.ts
+msgid "Monthly traffic quota usage exceeds {value}%"
+msgstr "Monthly traffic quota usage exceeds {value}%"
+
+#: src/components/routes/system/traffic-quota.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Monthly traffic quota used"
+msgstr "Monthly traffic quota used"
+
 #: src/components/add-system.tsx
 #: src/components/alerts-history-columns.tsx
 #: src/components/containers-table/containers-table-columns.tsx
@@ -1113,6 +1179,10 @@ msgstr "Network unit"
 msgid "No"
 msgstr "No"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "No monthly traffic quota is set."
+msgstr "No monthly traffic quota is set."
+
 #: src/components/command-palette.tsx
 #: src/components/systemd-table/systemd-table.tsx
 msgid "No results found."
@@ -1136,6 +1206,7 @@ msgstr "No S.M.A.R.T. attributes available for this device."
 msgid "No systems found."
 msgstr "No systems found."
 
+#: src/components/systems-table/systems-table-columns.tsx
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Not set"
 msgstr "Not set"
@@ -1331,6 +1402,14 @@ msgstr "Queue Depth"
 msgid "Quiet Hours"
 msgstr "Quiet Hours"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Quota"
+msgstr "Quota"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Quota unit"
+msgstr "Quota unit"
+
 #. Disk read
 #: src/components/routes/system/charts/disk-charts.tsx
 #: src/components/routes/system/disk-io-sheet.tsx
@@ -1340,6 +1419,7 @@ msgid "Read"
 msgstr "Read"
 
 #: src/components/routes/system/charts/network-charts.tsx
+#: src/components/routes/system/traffic-quota.tsx
 msgid "Received"
 msgstr "Received"
 
@@ -1352,6 +1432,10 @@ msgstr "Refresh"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Relationships"
 msgstr "Relationships"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Remaining"
+msgstr "Remaining"
 
 #: src/components/login/login.tsx
 msgid "Request a one-time password"
@@ -1412,6 +1496,10 @@ msgstr "S.M.A.R.T. Details"
 msgid "S.M.A.R.T. Self-Test"
 msgstr "S.M.A.R.T. Self-Test"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Save"
+msgstr "Save"
+
 #: src/components/add-system.tsx
 msgid "Save {foo}"
 msgstr "Save {foo}"
@@ -1428,6 +1516,10 @@ msgstr "Save Settings"
 #: src/components/routes/settings/tokens-fingerprints.tsx
 msgid "Saved in the database and does not expire until you disable it."
 msgstr "Saved in the database and does not expire until you disable it."
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Saving..."
+msgstr "Saving..."
 
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Schedule"
@@ -1474,8 +1566,17 @@ msgid "Send test heartbeat"
 msgstr "Send test heartbeat"
 
 #: src/components/routes/system/charts/network-charts.tsx
+#: src/components/routes/system/traffic-quota.tsx
 msgid "Sent"
 msgstr "Sent"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Sent and received"
+msgstr "Sent and received"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Sent only"
+msgstr "Sent only"
 
 #: src/components/routes/system/smart-table.tsx
 msgid "Serial Number"
@@ -1489,6 +1590,10 @@ msgstr "Service Details"
 #: src/components/systems-table/systems-table-columns.tsx
 msgid "Services"
 msgstr "Services"
+
+#: src/components/alerts/alerts-sheet.tsx
+msgid "Set a monthly traffic quota to enable this alert."
+msgstr "Set a monthly traffic quota to enable this alert."
 
 #: src/components/routes/settings/general.tsx
 msgid "Set percentage thresholds for meter colors."
@@ -1523,6 +1628,10 @@ msgstr "SMTP settings"
 #: src/components/systems-table/systems-table.tsx
 msgid "Sort By"
 msgstr "Sort By"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Source"
+msgstr "Source"
 
 #: src/components/routes/settings/quiet-hours.tsx
 #: src/components/routes/settings/quiet-hours.tsx
@@ -1644,6 +1753,12 @@ msgstr "Test heartbeat"
 msgid "Test notification sent"
 msgstr "Test notification sent"
 
+#. placeholder {0}: usage.reset_count
+#. placeholder {1}: usage.interface_change_count
+#: src/components/routes/system/traffic-quota.tsx
+msgid "The agent observed {0} counter resets and {1} interface changes during this cycle."
+msgstr "The agent observed {0} counter resets and {1} interface changes during this cycle."
+
 #: src/components/routes/settings/heartbeat.tsx
 msgid "The overall status is <0>ok</0> when all systems are up, <1>warn</1> when alerts are triggered, and <2>error</2> when any system is down."
 msgstr "The overall status is <0>ok</0> when all systems are up, <1>warn</1> when alerts are triggered, and <2>error</2> when any system is down."
@@ -1723,6 +1838,31 @@ msgstr "Total time spent on read/write (can exceed 100%)"
 msgid "Total: {0}"
 msgstr "Total: {0}"
 
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Tracking started"
+msgstr "Tracking started"
+
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Traffic"
+msgstr "Traffic"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Traffic counted"
+msgstr "Traffic counted"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "Traffic data is incomplete"
+msgstr "Traffic data is incomplete"
+
+#: src/lib/alerts.ts
+msgid "Traffic Quota"
+msgstr "Traffic Quota"
+
+#: src/components/routes/system/traffic-quota.tsx
+#: src/components/systems-table/systems-table-columns.tsx
+msgid "Traffic settings"
+msgstr "Traffic settings"
+
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Triggered by"
 msgstr "Triggered by"
@@ -1766,6 +1906,10 @@ msgstr "Triggers when GPU usage exceeds a threshold"
 #: src/lib/alerts.ts
 msgid "Triggers when memory usage exceeds a threshold"
 msgstr "Triggers when memory usage exceeds a threshold"
+
+#: src/lib/alerts.ts
+msgid "Triggers when monthly traffic quota usage exceeds a threshold"
+msgstr "Triggers when monthly traffic quota usage exceeds a threshold"
 
 #: src/lib/alerts.ts
 msgid "Triggers when status switches between up and down"
@@ -1846,12 +1990,18 @@ msgstr "Uptime"
 msgid "Usage"
 msgstr "Usage"
 
+#. placeholder {0}: alertData.unit
+#: src/components/alerts/alerts-sheet.tsx
+msgid "Usage exceeds <0>{value}{0}</0>"
+msgstr "Usage exceeds <0>{value}{0}</0>"
+
 #: src/components/routes/system/charts/disk-charts.tsx
 msgid "Usage of root partition"
 msgstr "Usage of root partition"
 
 #: src/components/routes/system/charts/memory-charts.tsx
 #: src/components/routes/system/charts/memory-charts.tsx
+#: src/components/routes/system/traffic-quota.tsx
 msgid "Used"
 msgstr "Used"
 
@@ -1878,6 +2028,10 @@ msgstr "View"
 #: src/components/routes/system/network-sheet.tsx
 msgid "View more"
 msgstr "View more"
+
+#: src/components/active-alerts.tsx
+msgid "View system"
+msgstr "View system"
 
 #: src/components/routes/settings/alerts-history-data-table.tsx
 msgid "View your 200 most recent alerts."
@@ -1946,6 +2100,10 @@ msgstr "YAML Configuration"
 #: src/components/systemd-table/systemd-table.tsx
 msgid "Yes"
 msgstr "Yes"
+
+#: src/components/routes/system/traffic-quota.tsx
+msgid "You have read-only access. Traffic settings cannot be changed."
+msgstr "You have read-only access. Traffic settings cannot be changed."
 
 #: src/components/routes/settings/layout.tsx
 msgid "Your user settings have been updated."
