@@ -24,6 +24,7 @@ type AlertManager struct {
 	stopOnce      sync.Once
 	pendingAlerts sync.Map
 	alertsCache   *AlertsCache
+	trafficMu     sync.Mutex
 }
 
 type AlertMessageData struct {
