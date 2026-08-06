@@ -129,6 +129,10 @@ msgstr "افزودن {foo}"
 msgid "Add URL"
 msgstr "افزودن آدرس اینترنتی"
 
+#: src/components/systems-table/systems-table.tsx
+msgid "Adjust column order"
+msgstr ""
+
 #: src/components/routes/settings/general.tsx
 msgid "Adjust display options for charts."
 msgstr "تنظیم گزینه‌های نمایش برای نمودارها."
@@ -1456,6 +1460,10 @@ msgstr "روابط"
 msgid "Remaining"
 msgstr ""
 
+#: src/components/systems-table/systems-table.tsx
+msgid "Reorder the fields shown between System and Actions."
+msgstr ""
+
 #: src/components/login/login.tsx
 msgid "Request a one-time password"
 msgstr "درخواست رمز عبور یک‌بار مصرف"
@@ -1472,7 +1480,6 @@ msgstr "مورد نیاز توسط"
 msgid "Requires"
 msgstr "نیازمند"
 
-#: src/components/systems-table/systems-table.tsx
 #: src/components/systems-table/systems-table.tsx
 msgid "Reset column order"
 msgstr ""
