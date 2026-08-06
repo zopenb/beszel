@@ -129,6 +129,10 @@ msgstr "Thêm {foo}"
 msgid "Add URL"
 msgstr "Thêm URL"
 
+#: src/components/systems-table/systems-table.tsx
+msgid "Adjust column order"
+msgstr ""
+
 #: src/components/routes/settings/general.tsx
 msgid "Adjust display options for charts."
 msgstr "Điều chỉnh tùy chọn hiển thị cho biểu đồ."
@@ -1456,6 +1460,10 @@ msgstr "Mối quan hệ"
 msgid "Remaining"
 msgstr ""
 
+#: src/components/systems-table/systems-table.tsx
+msgid "Reorder the fields shown between System and Actions."
+msgstr ""
+
 #: src/components/login/login.tsx
 msgid "Request a one-time password"
 msgstr "Yêu cầu mật khẩu một lần"
@@ -1472,7 +1480,6 @@ msgstr "Được yêu cầu bởi"
 msgid "Requires"
 msgstr "Yêu cầu"
 
-#: src/components/systems-table/systems-table.tsx
 #: src/components/systems-table/systems-table.tsx
 msgid "Reset column order"
 msgstr ""
