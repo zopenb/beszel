@@ -29,6 +29,7 @@ export interface SystemRecord extends RecordModel {
 	status: "up" | "down" | "paused" | "pending"
 	port: string
 	subscription_expires?: string
+	provider_url?: string
 	info: SystemInfo
 	v: string
 	updated: string
