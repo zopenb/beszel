@@ -190,7 +190,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			// accessorKey: "info.mp",
 			accessorFn: ({ info }) => info.mp || undefined,
 			id: "memory",
-			size: 192,
+			size: 220,
 			name: () => t`Memory`,
 			cell: (info: CellContext<SystemRecord, unknown>) => TableCellWithMeter(info, info.row.original.info.ms),
 			Icon: MemoryStickIcon,
@@ -199,7 +199,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 		{
 			accessorFn: ({ info }) => info.dp || undefined,
 			id: "disk",
-			size: 192,
+			size: 220,
 			name: () => t`Disk`,
 			cell: (info: CellContext<SystemRecord, unknown>) =>
 				info.row.original.info.efs ? DiskCellWithMultiple(info) : TableCellWithMeter(info, info.row.original.info.ds),
@@ -391,7 +391,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			},
 			id: "traffic",
 			name: () => t`Traffic`,
-			size: 192,
+			size: 220,
 			Icon: GaugeIcon,
 			header: sortableHeader,
 			sortUndefined: "last",
@@ -423,7 +423,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 					>
 						<span className="w-11 shrink-0">{displayPercentage}%</span>
 						<span
-							className="relative flex h-[1em] min-w-8 flex-1 items-center justify-center overflow-hidden rounded-sm bg-muted"
+							className="relative flex h-[1em] w-24 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-muted"
 							role="progressbar"
 							aria-label={t`Monthly traffic quota used`}
 							aria-valuemin={0}
@@ -582,7 +582,12 @@ function TableCellWithMeter(info: CellContext<SystemRecord, unknown>, usage?: [n
 	return (
 		<div className="flex gap-2 items-center tabular-nums tracking-tight w-full">
 			<span className="w-11 shrink-0">{decimalString(val, val >= 10 ? 1 : 2)}%</span>
-			<span className="relative flex-1 min-w-8 flex items-center justify-center bg-muted h-[1em] rounded-sm overflow-hidden">
+			<span
+				className={cn(
+					"relative flex items-center justify-center bg-muted h-[1em] rounded-sm overflow-hidden",
+					usage ? "w-24 shrink-0" : "flex-1 min-w-8"
+				)}
+			>
 				<span className={cn("absolute inset-y-0 start-0", meterClass)} style={{ width: `${val}%` }}></span>
 				{usage?.[1] ? <UsageTotal usage={usage} /> : null}
 			</span>
@@ -632,7 +637,7 @@ function DiskCellWithMultiple(info: CellContext<SystemRecord, unknown>) {
 				>
 					<div className="flex gap-2 items-center tabular-nums tracking-tight">
 						<span className="w-11 shrink-0">{decimalString(rootDiskPct, rootDiskPct >= 10 ? 1 : 2)}%</span>
-						<span className="relative flex-1 min-w-8 flex items-center justify-center px-1 bg-muted h-[1em] rounded-sm overflow-hidden">
+						<span className="relative flex h-[1em] w-24 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-muted px-1">
 							{/* Root disk */}
 							<span
 								className={cn("absolute inset-0", getMeterClass(rootDiskPct))}
