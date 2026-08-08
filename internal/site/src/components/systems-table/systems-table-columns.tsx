@@ -190,7 +190,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			// accessorKey: "info.mp",
 			accessorFn: ({ info }) => info.mp || undefined,
 			id: "memory",
-			size: 180,
+			size: 192,
 			name: () => t`Memory`,
 			cell: (info: CellContext<SystemRecord, unknown>) => TableCellWithMeter(info, info.row.original.info.ms),
 			Icon: MemoryStickIcon,
@@ -199,7 +199,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 		{
 			accessorFn: ({ info }) => info.dp || undefined,
 			id: "disk",
-			size: 180,
+			size: 192,
 			name: () => t`Disk`,
 			cell: (info: CellContext<SystemRecord, unknown>) =>
 				info.row.original.info.efs ? DiskCellWithMultiple(info) : TableCellWithMeter(info, info.row.original.info.ds),
@@ -391,7 +391,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			},
 			id: "traffic",
 			name: () => t`Traffic`,
-			size: 180,
+			size: 192,
 			Icon: GaugeIcon,
 			header: sortableHeader,
 			sortUndefined: "last",
