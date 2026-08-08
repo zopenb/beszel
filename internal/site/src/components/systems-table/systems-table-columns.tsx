@@ -391,7 +391,7 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 			},
 			id: "traffic",
 			name: () => t`Traffic`,
-			size: 230,
+			size: 180,
 			Icon: GaugeIcon,
 			header: sortableHeader,
 			sortUndefined: "last",
@@ -414,12 +414,14 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 				const used = getTrafficUsed(system.traffic_usage, system.traffic_count_mode)
 				const percentage = getTrafficPercent(used, quota)
 				const displayPercentage = Math.min(percentage, 999.9)
+				const compactUsed = formatDecimalBytes(used, 1, i18n.locale).replace(/\s?([MGT])B$/, "$1")
+				const compactQuota = formatDecimalBytes(quota, 1, i18n.locale).replace(/\s?([MGT])B$/, "$1")
 				return (
 					<div
 						className="flex w-full items-center gap-2 tabular-nums tracking-tight"
 						title={`${formatDecimalBytes(used, 2, i18n.locale)} / ${formatDecimalBytes(quota, 2, i18n.locale)}`}
 					>
-						<span className="min-w-8 shrink-0">{displayPercentage}%</span>
+						<span className="w-11 shrink-0">{displayPercentage}%</span>
 						<span
 							className="relative flex h-[1em] min-w-8 flex-1 items-center justify-center overflow-hidden rounded-sm bg-muted"
 							role="progressbar"
@@ -433,8 +435,8 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 								className={`absolute inset-y-0 start-0 ${getTrafficMeterClass(percentage)}`}
 								style={{ width: `${Math.min(percentage, 100)}%` }}
 							/>
-							<span className="relative z-10 mx-auto whitespace-nowrap px-1 text-[10px] font-medium leading-none drop-shadow-[0_1px_1px_hsl(var(--background))]">
-								{formatDecimalBytes(used, 1, i18n.locale)} / {formatDecimalBytes(quota, 1, i18n.locale)}
+							<span className="relative z-10 mx-auto whitespace-nowrap text-[9px] font-medium leading-none drop-shadow-[0_1px_1px_hsl(var(--background))]">
+								{compactUsed}/{compactQuota}
 							</span>
 						</span>
 					</div>
@@ -579,7 +581,7 @@ function TableCellWithMeter(info: CellContext<SystemRecord, unknown>, usage?: [n
 	)
 	return (
 		<div className="flex gap-2 items-center tabular-nums tracking-tight w-full">
-			<span className="min-w-8 shrink-0">{decimalString(val, val >= 10 ? 1 : 2)}%</span>
+			<span className="w-11 shrink-0">{decimalString(val, val >= 10 ? 1 : 2)}%</span>
 			<span className="relative flex-1 min-w-8 flex items-center justify-center bg-muted h-[1em] rounded-sm overflow-hidden">
 				<span className={cn("absolute inset-y-0 start-0", meterClass)} style={{ width: `${val}%` }}></span>
 				{usage?.[1] ? <UsageTotal usage={usage} /> : null}
@@ -629,7 +631,7 @@ function DiskCellWithMultiple(info: CellContext<SystemRecord, unknown>) {
 					className="flex flex-col gap-0.5 w-full relative z-10"
 				>
 					<div className="flex gap-2 items-center tabular-nums tracking-tight">
-						<span className="min-w-8 shrink-0">{decimalString(rootDiskPct, rootDiskPct >= 10 ? 1 : 2)}%</span>
+						<span className="w-11 shrink-0">{decimalString(rootDiskPct, rootDiskPct >= 10 ? 1 : 2)}%</span>
 						<span className="relative flex-1 min-w-8 flex items-center justify-center px-1 bg-muted h-[1em] rounded-sm overflow-hidden">
 							{/* Root disk */}
 							<span

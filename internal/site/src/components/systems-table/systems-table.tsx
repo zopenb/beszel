@@ -448,7 +448,7 @@ const AllSystemsTable = memo(
 			>
 				{/* add header height to table size */}
 				<div style={{ height: `${virtualizer.getTotalSize() + 50}px`, paddingTop, paddingBottom }}>
-					<table className="h-full w-full text-sm" style={{ minWidth: table.getTotalSize() }}>
+					<table className="h-full w-full table-fixed text-sm" style={{ minWidth: table.getTotalSize() }}>
 						<SystemsTableHead table={table} />
 						<TableBody onMouseEnter={preloadSystemDetail}>
 							{rows.length ? (
