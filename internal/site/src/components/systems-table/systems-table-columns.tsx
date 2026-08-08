@@ -422,8 +422,10 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 						title={`${formatDecimalBytes(used, 2, i18n.locale)} / ${formatDecimalBytes(quota, 2, i18n.locale)}`}
 					>
 						<span className="w-11 shrink-0">{displayPercentage}%</span>
-						<span
-							className="relative flex h-[1em] w-24 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-muted"
+						<MeterBar
+							value={percentage}
+							fillClass={getTrafficMeterClass(percentage)}
+							className="w-32 shrink-0"
 							role="progressbar"
 							aria-label={t`Monthly traffic quota used`}
 							aria-valuemin={0}
@@ -431,14 +433,10 @@ export function SystemsTableColumns(viewMode: "table" | "grid"): ColumnDef<Syste
 							aria-valuenow={Math.min(percentage, 100)}
 							aria-valuetext={`${formatDecimalBytes(used, 2, i18n.locale)} / ${formatDecimalBytes(quota, 2, i18n.locale)} (${percentage}%)`}
 						>
-							<span
-								className={`absolute inset-y-0 start-0 ${getTrafficMeterClass(percentage)}`}
-								style={{ width: `${Math.min(percentage, 100)}%` }}
-							/>
-							<span className="relative z-10 mx-auto whitespace-nowrap text-[9px] font-medium leading-none drop-shadow-[0_1px_1px_hsl(var(--background))]">
-								{compactUsed}/{compactQuota}
+							<span className="relative z-10 mx-auto whitespace-nowrap text-[10px] font-medium leading-none drop-shadow-[0_1px_1px_hsl(var(--background))]">
+								{compactUsed} / {compactQuota}
 							</span>
-						</span>
+						</MeterBar>
 					</div>
 				)
 			},
@@ -582,16 +580,34 @@ function TableCellWithMeter(info: CellContext<SystemRecord, unknown>, usage?: [n
 	return (
 		<div className="flex gap-2 items-center tabular-nums tracking-tight w-full">
 			<span className="w-11 shrink-0">{decimalString(val, val >= 10 ? 1 : 2)}%</span>
-			<span
-				className={cn(
-					"relative flex items-center justify-center bg-muted h-[1em] rounded-sm overflow-hidden",
-					usage ? "w-24 shrink-0" : "flex-1 min-w-8"
-				)}
-			>
-				<span className={cn("absolute inset-y-0 start-0", meterClass)} style={{ width: `${val}%` }}></span>
+			<MeterBar value={val} fillClass={meterClass} className={usage ? "w-32 shrink-0" : "flex-1 min-w-8"}>
 				{usage?.[1] ? <UsageTotal usage={usage} /> : null}
-			</span>
+			</MeterBar>
 		</div>
+	)
+}
+
+function MeterBar({
+	value,
+	fillClass,
+	className,
+	children,
+	...props
+}: React.ComponentProps<"span"> & { value: number; fillClass: string }) {
+	return (
+		<span
+			className={cn(
+				"relative flex h-[1em] items-center justify-center overflow-hidden rounded-sm bg-muted px-1",
+				className
+			)}
+			{...props}
+		>
+			<span
+				className={cn("absolute inset-y-0 start-0", fillClass)}
+				style={{ width: `${Math.min(Math.max(value, 0), 100)}%` }}
+			/>
+			{children}
+		</span>
 	)
 }
 
@@ -637,12 +653,7 @@ function DiskCellWithMultiple(info: CellContext<SystemRecord, unknown>) {
 				>
 					<div className="flex gap-2 items-center tabular-nums tracking-tight">
 						<span className="w-11 shrink-0">{decimalString(rootDiskPct, rootDiskPct >= 10 ? 1 : 2)}%</span>
-						<span className="relative flex h-[1em] w-24 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-muted px-1">
-							{/* Root disk */}
-							<span
-								className={cn("absolute inset-0", getMeterClass(rootDiskPct))}
-								style={{ width: `${rootDiskPct}%` }}
-							></span>
+						<MeterBar value={rootDiskPct} fillClass={getMeterClass(rootDiskPct)} className="w-32 shrink-0">
 							{sysInfo.ds?.[1] ? <UsageTotal usage={sysInfo.ds} /> : null}
 							{/* Extra disk indicators */}
 							<span className="absolute end-1 z-10 flex items-center gap-0.5">
@@ -653,7 +664,7 @@ function DiskCellWithMultiple(info: CellContext<SystemRecord, unknown>) {
 									/>
 								))}
 							</span>
-						</span>
+						</MeterBar>
 					</div>
 				</Link>
 			</TooltipTrigger>
