@@ -125,6 +125,14 @@ msgstr "État actif"
 msgid "Add {foo}"
 msgstr "Ajouter {foo}"
 
+#: src/components/routes/system/info-bar.tsx
+msgid "Add a link to quickly open this VPS provider's website."
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+msgid "Add provider website"
+msgstr ""
+
 #: src/components/routes/settings/notifications.tsx
 msgid "Add URL"
 msgstr "Ajouter l’URL"
@@ -721,6 +729,11 @@ msgstr "Éditer"
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Edit {foo}"
 msgstr "Modifier {foo}"
+
+#: src/components/routes/system/info-bar.tsx
+#: src/components/routes/system/info-bar.tsx
+msgid "Edit provider website"
+msgstr ""
 
 #: src/components/login/auth-form.tsx
 #: src/components/login/forgot-pass-form.tsx
@@ -1411,6 +1424,12 @@ msgstr "Langue préférée"
 msgid "Process started"
 msgstr "Processus démarré"
 
+#: src/components/add-system.tsx
+#: src/components/routes/system/info-bar.tsx
+#: src/components/routes/system/info-bar.tsx
+msgid "Provider website"
+msgstr ""
+
 #. Use 'Key' if your language requires many more characters
 #: src/components/add-system.tsx
 msgid "Public Key"
@@ -1527,6 +1546,7 @@ msgstr "Détails S.M.A.R.T."
 msgid "S.M.A.R.T. Self-Test"
 msgstr "Auto-test S.M.A.R.T."
 
+#: src/components/routes/system/info-bar.tsx
 #: src/components/routes/system/traffic-quota.tsx
 msgid "Save"
 msgstr ""
@@ -1821,11 +1841,6 @@ msgstr "Format d'heure"
 #: src/components/routes/settings/notifications.tsx
 msgid "To email(s)"
 msgstr "Aux email(s)"
-
-#: src/components/mode-toggle.tsx
-#: src/components/mode-toggle.tsx
-#~ msgid "Toggle theme"
-#~ msgstr "Changer le thème"
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
