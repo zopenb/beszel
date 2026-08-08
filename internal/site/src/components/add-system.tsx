@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { isReadOnlyUser, pb } from "@/lib/api"
 import { SystemStatus } from "@/lib/enums"
+import { normalizeProviderURL } from "@/lib/provider-url"
 import { $publicKey } from "@/lib/stores"
 import { cn, generateToken, tokenMap, useBrowserStorage } from "@/lib/utils"
 import type { SystemRecord } from "@/types"
@@ -98,6 +99,7 @@ export const SystemDialog = ({ setOpen, system }: { setOpen: (open: boolean) => 
 		if (data.subscription_expires) {
 			data.subscription_expires = new Date(`${data.subscription_expires}T23:59:59.999`).toISOString()
 		}
+		data.provider_url = normalizeProviderURL(String(data.provider_url ?? ""))
 		data.users = pb.authStore.record!.id
 		try {
 			setOpen(false)
@@ -216,6 +218,19 @@ export const SystemDialog = ({ setOpen, system }: { setOpen: (open: boolean) => 
 							type="date"
 							defaultValue={formatSubscriptionDateInput(system?.subscription_expires)}
 							className="tabular-nums"
+						/>
+						<Label htmlFor="provider_url" className="xs:text-end whitespace-pre">
+							<Trans>Provider website</Trans>
+						</Label>
+						<Input
+							id="provider_url"
+							name="provider_url"
+							type="text"
+							inputMode="url"
+							placeholder="https://example.com"
+							defaultValue={system?.provider_url}
+							autoCapitalize="none"
+							autoCorrect="off"
 						/>
 						<Label htmlFor="pkey" className="xs:text-end whitespace-pre">
 							<Trans comment="Use 'Key' if your language requires many more characters">Public Key</Trans>

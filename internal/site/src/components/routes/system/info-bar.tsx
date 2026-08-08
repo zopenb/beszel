@@ -5,15 +5,26 @@ import {
 	ChevronRightSquareIcon,
 	ClockArrowUp,
 	CpuIcon,
+	ExternalLinkIcon,
 	GlobeIcon,
 	MemoryStickIcon,
 	MonitorIcon,
+	PencilIcon,
+	PlusIcon,
 	Settings2Icon,
 } from "lucide-react"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import ChartTimeSelect from "@/components/charts/chart-time-select"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -24,9 +35,13 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { FreeBsdIcon, TuxIcon, WebSocketIcon, WindowsIcon } from "@/components/ui/icons"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { isReadOnlyUser, pb } from "@/lib/api"
 import { ConnectionType, connectionTypeLabels, Os, SystemStatus } from "@/lib/enums"
+import { getProviderWebsiteURL, normalizeProviderURL } from "@/lib/provider-url"
 import { cn, formatBytes, getHostDisplayValue, secondsToUptimeString, toFixedFloat } from "@/lib/utils"
 import type { ChartData, SystemDetailsRecord, SystemRecord } from "@/types"
 
@@ -48,6 +63,21 @@ export default function InfoBar({
 	details: SystemDetailsRecord | null
 }) {
 	const { t } = useLingui()
+	const [editSystemOpen, setEditSystemOpen] = useState(false)
+	const [providerURLInput, setProviderURLInput] = useState(system.provider_url ?? "")
+	const providerWebsiteURL = getProviderWebsiteURL(system.provider_url)
+
+	function setProviderDialogOpen(open: boolean) {
+		setEditSystemOpen(open)
+		if (open) {
+			setProviderURLInput(system.provider_url ?? "")
+		}
+	}
+
+	async function saveProviderURL() {
+		await pb.collection("systems").update(system.id, { provider_url: normalizeProviderURL(providerURLInput) })
+		setEditSystemOpen(false)
+	}
 
 	// values for system info bar - use details with fallback to system.info
 	const systemInfo = useMemo(() => {
@@ -175,6 +205,41 @@ export default function InfoBar({
 							)}
 						</Tooltip>
 
+						{(providerWebsiteURL || !isReadOnlyUser()) && (
+							<>
+								<Separator orientation="vertical" className="h-4 bg-primary/30" />
+								<div className="flex items-center gap-0.5">
+									{providerWebsiteURL ? (
+										<a
+											href={providerWebsiteURL}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="flex items-center gap-1.5 font-medium text-primary hover:underline underline-offset-4"
+										>
+											<ExternalLinkIcon className="size-4" />
+											<Trans>Provider website</Trans>
+										</a>
+									) : (
+										<Button variant="link" className="h-auto gap-1.5 p-0" onClick={() => setEditSystemOpen(true)}>
+											<PlusIcon className="size-4" />
+											<Trans>Add provider website</Trans>
+										</Button>
+									)}
+									{providerWebsiteURL && !isReadOnlyUser() && (
+										<Button
+											variant="ghost"
+											size="icon"
+											className="size-7"
+											aria-label={t`Edit provider website`}
+											onClick={() => setEditSystemOpen(true)}
+										>
+											<PencilIcon className="size-3.5" />
+										</Button>
+									)}
+								</div>
+							</>
+						)}
+
 						{systemInfo.map(({ value, label, Icon, hide }) => {
 							if (hide || !value) {
 								return null
@@ -251,6 +316,46 @@ export default function InfoBar({
 					</DropdownMenu>
 				</div>
 			</div>
+			{!isReadOnlyUser() && (
+				<Dialog open={editSystemOpen} onOpenChange={setProviderDialogOpen}>
+					<DialogContent className="sm:max-w-md">
+						<form
+							onSubmit={async (event) => {
+								event.preventDefault()
+								await saveProviderURL()
+							}}
+						>
+							<DialogHeader>
+								<DialogTitle>
+									<Trans>Edit provider website</Trans>
+								</DialogTitle>
+								<DialogDescription>
+									<Trans>Add a link to quickly open this VPS provider's website.</Trans>
+								</DialogDescription>
+							</DialogHeader>
+							<div className="grid gap-2 py-5">
+								<Label htmlFor="provider_url_detail">
+									<Trans>Provider website</Trans>
+								</Label>
+								<Input
+									id="provider_url_detail"
+									inputMode="url"
+									placeholder="https://example.com"
+									value={providerURLInput}
+									onChange={(event) => setProviderURLInput(event.target.value)}
+									autoCapitalize="none"
+									autoCorrect="off"
+								/>
+							</div>
+							<DialogFooter>
+								<Button type="submit">
+									<Trans>Save</Trans>
+								</Button>
+							</DialogFooter>
+						</form>
+					</DialogContent>
+				</Dialog>
+			)}
 		</Card>
 	)
 }
