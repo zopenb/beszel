@@ -125,6 +125,14 @@ msgstr "Aktivno stanje"
 msgid "Add {foo}"
 msgstr "Dodaj {foo}"
 
+#: src/components/routes/system/info-bar.tsx
+msgid "Add a link to quickly open this VPS provider's website."
+msgstr ""
+
+#: src/components/routes/system/info-bar.tsx
+msgid "Add provider website"
+msgstr ""
+
 #: src/components/routes/settings/notifications.tsx
 msgid "Add URL"
 msgstr "Dodaj URL"
@@ -721,6 +729,11 @@ msgstr "Uredi"
 #: src/components/routes/settings/quiet-hours.tsx
 msgid "Edit {foo}"
 msgstr "Uredi {foo}"
+
+#: src/components/routes/system/info-bar.tsx
+#: src/components/routes/system/info-bar.tsx
+msgid "Edit provider website"
+msgstr ""
 
 #: src/components/login/auth-form.tsx
 #: src/components/login/forgot-pass-form.tsx
@@ -1411,6 +1424,12 @@ msgstr "Preferirani jezik"
 msgid "Process started"
 msgstr "Proces pokrenut"
 
+#: src/components/add-system.tsx
+#: src/components/routes/system/info-bar.tsx
+#: src/components/routes/system/info-bar.tsx
+msgid "Provider website"
+msgstr ""
+
 #. Use 'Key' if your language requires many more characters
 #: src/components/add-system.tsx
 msgid "Public Key"
@@ -1527,6 +1546,7 @@ msgstr "S.M.A.R.T. Detalji"
 msgid "S.M.A.R.T. Self-Test"
 msgstr "S.M.A.R.T. Samotestiranje"
 
+#: src/components/routes/system/info-bar.tsx
 #: src/components/routes/system/traffic-quota.tsx
 msgid "Save"
 msgstr ""
@@ -1821,11 +1841,6 @@ msgstr "Format vremena"
 #: src/components/routes/settings/notifications.tsx
 msgid "To email(s)"
 msgstr "Primaoci emaila"
-
-#: src/components/mode-toggle.tsx
-#: src/components/mode-toggle.tsx
-#~ msgid "Toggle theme"
-#~ msgstr "Uključi/isključi temu"
 
 #: src/components/add-system.tsx
 #: src/components/routes/settings/tokens-fingerprints.tsx
